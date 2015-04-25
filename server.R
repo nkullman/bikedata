@@ -1,11 +1,9 @@
 library(shiny)
 library(ggplot2)
 
+dataset = reactive({readRDS("fremont.rds")})
+
 function(input, output) {
-  
-  dataset <- reactive({
-    fremont
-  })
   
   output$plot <- renderPlot({
     

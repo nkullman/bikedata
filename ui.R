@@ -1,8 +1,6 @@
 library(shiny)
 library(ggplot2)
 
-dataset <- fremont
-
 fluidPage(
   
   titlePanel("Fremont Bridge Bicycle Counts"),
