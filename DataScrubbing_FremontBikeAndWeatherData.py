@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[135]:
+# In[167]:
 
 import pandas
 import numpy
@@ -11,31 +11,31 @@ from pandas import *
 from pylab import *
 
 
-# In[137]:
+# In[168]:
 
 # Read in raw weather CSV
 fwd = read_csv("FremontWeatherData_Daily_raw.csv")
 
 
-# In[138]:
+# In[169]:
 
 # Eliminate unnecessary columns: index ('unnamed...') and 'PDT'
 fwd = fwd.drop(["Unnamed: 0", "PDT"], axis=1)
 
 
-# In[139]:
+# In[170]:
 
 # Convert "Date" to datetime format
 fwd["Date"] = pandas.to_datetime(fwd["Date"])
 
 
-# In[140]:
+# In[171]:
 
 # Write formatted weather data to file
 fwd.to_csv('FremontWeatherData_Daily.csv')
 
 
-# In[141]:
+# In[172]:
 
 # Desired end-result is merged dataset with bike and weather data
 # Weather data formatting is completed.
@@ -48,26 +48,26 @@ fwd.to_csv('FremontWeatherData_Daily.csv')
 fbd = read_csv("Fremont_Bridge_Hourly_Bicycle_Counts_by_Month_October_2012_to_present.csv")
 
 
-# In[142]:
+# In[173]:
 
 # Split date into date and time columns
 fbd["Time"] = fbd["Date"].map(lambda x: x[x.index(" ") + 1:])
 fbd["Date"] = fbd["Date"].map(lambda x: x[:x.index(" ")])
 
 
-# In[143]:
+# In[174]:
 
 # Reorder columns
 fbd = fbd[["Date", "Time", "Fremont Bridge NB", "Fremont Bridge SB"]]
 
 
-# In[144]:
+# In[175]:
 
 # Convert "Date" to datetime format
 fbd["Date"] = pandas.to_datetime(fbd["Date"])
 
 
-# In[145]:
+# In[176]:
 
 # Melt the two count columns
 fbd = pandas.melt(fbd,
@@ -76,20 +76,26 @@ fbd = pandas.melt(fbd,
                 value_name = 'CyclistCount')
 
 
-# In[146]:
+# In[177]:
 
 # Simplify the entries in the "Direction" column
 fbd["Direction"] = fbd["Direction"].map(lambda x: x[x.rfind(" "):])
 
 
-# In[150]:
+# In[178]:
+
+# Add boolean column for weekday/weekend state
+fbd["IsWeekday"] = fbd["Date"].map(lambda x: x.weekday() >= 5)
+
+
+# In[179]:
 
 # Formatting of bike data complete.
 # Dataframes ready for merge.
 fwabd = merge(fbd, fwd, on = "Date", how = "inner")
 
 
-# In[151]:
+# In[180]:
 
 # Write merged dataset to file:
 fwabd.to_csv("FremontBikeAndWeatherData.csv")
