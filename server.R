@@ -1,20 +1,30 @@
 library(shiny)
-library(ggplot2)
+library(dplyr)
+library(ggvis)
 
-dataset = reactive({readRDS("fremont.rds")})
+fremont = readRDS("fremont.rds")
 
 function(input, output) {
   
-  output$plot <- renderPlot({
-    
-    p <- ggplot(dataset(), aes_string(x="Time", y="Count", group=1)) +
-      stat_summary(fun.y=mean, geom="line", size=1)
-    
-    if (input$color != 'None')
-      p <- p + aes_string(group=input$color, color=input$color)
-    
-    print(p)
-    
-  }, height=700)
+  dataset = reactive({
+    if (input$weekday == "Weekdays")
+    {
+      df = fremont[fremont$IsWeekday,]
+    } else if (input$weekday == "Weekends")
+    {
+      df = fremont[!fremont$IsWeekday,]
+    } else {
+      df = fremont
+    }
+    df %>% group_by(Time, Direction) %>% summarize(CyclistCount=mean(CyclistCount))
+    })
   
+    
+   p <- reactive({dataset %>% 
+                    ggvis(x=~Time, y=~CyclistCount) %>% 
+                    group_by(Direction) %>% 
+                    layer_lines(stroke=~Direction)
+   })
+    
+   p %>% bind_shiny("plot")
 }
