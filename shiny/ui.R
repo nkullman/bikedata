@@ -7,7 +7,9 @@ fluidPage(
   
   sidebarPanel(
     radioButtons("weekday", NULL, c("All days", "Weekdays", "Weekends")),
-    sliderInput("temp", "High Temperature", 30, 95, c(30,95), step=1, ticks=TRUE, animate=animationOptions(interval=250))
+    sliderInput("temp", "High Temperature", 30, 95, c(30,95), step=1, ticks=TRUE),
+    sliderInput("precip", "Total Precipitation", 0, 2.49, c(0, 2.49), ticks=TRUE),
+    textOutput("numdays")
   ),
   
   mainPanel(
