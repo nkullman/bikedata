@@ -38,6 +38,7 @@ d3.csv("fremont.csv", function(csv)
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
 		.map(csv);
+	var numdays = Math.ceil(csv.length/48);
 	
 	d3.selectAll("input")
 		.on("change", change);
@@ -65,6 +66,7 @@ d3.csv("fremont.csv", function(csv)
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
 		.map(csv_filtered);
+		numdays = Math.ceil(csv_filtered.length/48);
 	}
 });
 </script>
