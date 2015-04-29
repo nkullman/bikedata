@@ -26,4 +26,17 @@ form {
   <label><input type="radio" name="dataset" value="weekends">Weekends</label>
 </form>
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script></script>
+<script>
+d3.csv("fremont.csv", function(csv)
+{
+	var data = d3.nest()
+		.key(function(d) {return d.Direction;})
+		.key(function(d) {return d.Time;})
+		.sortKeys(d3.ascending)
+		.rollup(function(d)
+		{
+			return d3.mean(d, function(g) {return +g.CyclistCount;});
+		})
+		.map(csv);
+});
+</script>
