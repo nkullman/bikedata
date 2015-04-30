@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: auto;
+  position: relative;
+  width: 960px;
+}
+text {
+  font: 10px sans-serif;
+}
+form {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  /*display: none;*/
+}
+
+.line {
+  fill: none;
+  /*stroke: steelblue;*/
+  stroke-width: 0.3px;
+}
+
+</style>
+<form>
+  <label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
+  <label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
+  <label><input type="radio" name="dataset" value="weekends">Weekends</label>
+</form>
+<script type = "text/javascript" src="d3/d3.js"></script>
+<script>
+var thedata;
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+	
+var parseDate = d3.time.format("%d-%b-%y").parse;
+var parseTime = d3.time.format("%I:%M:%S %p").parse;
+
+var xScale = d3.time.scale()
+    .range([0, width]);
+
+var yScale = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+	.tickFormat(d3.time.format("%I %p"));
+
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left");
+	
+var line = d3.svg.line()
+    .x(function(d) { return xScale(d.Time); })
+    .y(function(d) { return yScale(d.CyclistCount); });
+	
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Handle CSV
+d3.csv("fremont.csv", function(error, csv) {
+	if (error) {console.log(error);	}
+	
+	thedata = csv;
+	
+	// define data
+	var data = d3.nest()
+	/*thedata = d3.nest() */
+		.key(function(d) {return d.Direction;})
+		.key(function(d) {return d.Time;})
+		.sortKeys(d3.ascending)
+		.rollup( function(d) {
+			return d3.mean(d, function(g) {return +g.CyclistCount;});
+		})
+		.map(csv);
+	
+	// for each data element, redefine time and count
+	thedata.forEach(function(d) {
+		d.Time = parseTime(d.Time);
+		d.CyclistCount = +d.CyclistCount;
+	});
+	
+	// define x and y domains
+	xScale.domain(d3.extent(thedata, function (d) { return d.Time; }));
+	yScale.domain(d3.extent(thedata, function (d) { return d.CyclistCount; }));
+	
+	// draw NB thedata
+	svg.append("path")
+		.datum(thedata.filter(function (d) { return d.Direction === " NB";}))
+		.attr("class", "line")
+		.attr("d", line)
+		.attr("stroke", "steelblue");
+	// draw SB thedata
+	svg.append("path")
+		.datum(thedata.filter(function (d) { return d.Direction !== " NB";}))
+		.attr("class", "line")
+		.attr("d", line)
+		.attr("stroke", "brown");
+	
+	// draw x-axis
+	svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+	 /*.append("text")
+		.text("Time of day");*/
+	
+	// draw y-axis
+	svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Cyclists");
+	
+	
+	// Calculate number of days in dataset
+	var numEntriesPerDay = 48;
+	var numdays = Math.ceil(thedata.length/numEntriesPerDay);
+	
+	// first checked is "All Days". Create viz for this
+	
+	
+	// Handle change in radio button
+	d3.selectAll("input")
+		.on("change", update);
+	
+	// Generate vis
+	
+});
+
+// update vis (not actually a vis update at this time)
+function update() {
+
+	// get new setting of radio button
+	var value = this.value;
+	
+	// update the CSV
+	if (value == "weekdays") {
+		csv_filtered = csv.filter(function(d) { return d.IsWeekday == "TRUE"; });
+	} else if (value == "weekends"){
+		csv_filtered = csv.filter(function(d) { return d.IsWeekday == "FALSE"; });
+	} else {
+		csv_filtered = csv;
+	}
+	
+	// 
+	data = d3.nest()
+	.key(function(d) {return d.Direction;})
+	.key(function(d) {return d.Time;})
+	.sortKeys(d3.ascending)
+	.rollup(function(d) {
+		return d3.mean(d, function(g) {return +g.CyclistCount;});
+	})
+	.map(csv_filtered);
+	numdays = Math.ceil(csv_filtered.length/numEntriesPerDay);
+}
+</script>
