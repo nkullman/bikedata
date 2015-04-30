@@ -19,17 +19,67 @@ form {
   top: 10px;
 }
 
+svg {
+  font: 10px sans-serif;
+}
+.area {
+  fill: steelblue;
+  clip-path: url(#clip);
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.brush .extent {
+  stroke: steelblue;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
 </style>
 <form>
   <label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
   <label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
   <label><input type="radio" name="dataset" value="weekends">Weekends</label>
 </form>
+Max Temperature:
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-d3.csv("fremont.csv", function(csv)
+
+d3.csv("fremont.csv", function(csv) //load data
 {
-	var data = d3.nest()
+	var barwidth = 200,
+		barheight = 20;
+
+	var temp_selection = [30, 95];
+	
+	var temp_scale = d3.scale.linear()
+		.domain(temp_selection)
+		.range([0,barwidth]);
+
+	var temp_brush = d3.svg.brush()
+		.x(temp_scale)
+		.on("brush", brushed);
+	var temp_axis = d3.svg.axis()
+		.scale(temp_scale)
+		.orient("bottom")
+		.ticks(5);
+	var tempbar = d3.select("body")
+		.append("svg")
+		.attr("width", barwidth)
+		.attr("height", barheight);
+	tempbar.append("g")
+		.attr("class", "x axis")
+		.call(temp_axis);
+	tempbar.append("g")
+		.attr("class", "brush")
+		.call(temp_brush)
+		.selectAll("rect")
+		.attr("height", barheight);
+
+	var data = d3.nest() //initial aggregation
 		.key(function(d) {return d.Direction;})
 		.key(function(d) {return d.Time;})
 		.sortKeys(d3.ascending)
@@ -45,7 +95,9 @@ d3.csv("fremont.csv", function(csv)
 	
 	function change()
 	{
+		//Reaggragate data with new filters
 		var value = this.value;
+		var csv_filtered;
 		if (value == "weekdays")
 		{
 			csv_filtered = csv.filter(function(d) { return d.IsWeekday == "TRUE"; });
@@ -56,6 +108,11 @@ d3.csv("fremont.csv", function(csv)
 		{
 			csv_filtered = csv;
 		}
+		csv_filtered = csv_filtered.filter(function(d)
+		{
+			return temp_selection[0] <= d.Max_TemperatureF &&
+				d.Max_TemperatureF <= temp_selection[1];
+		});
 		
 		data = d3.nest()
 		.key(function(d) {return d.Direction;})
@@ -67,6 +124,13 @@ d3.csv("fremont.csv", function(csv)
 		})
 		.map(csv_filtered);
 		numdays = Math.ceil(csv_filtered.length/48);
+		console.log(numdays);
+	}
+	
+	function brushed()
+	{
+		temp_selection = temp_brush.empty() ? temp_scale.domain() : temp_brush.extent();
+		change();
 	}
 });
 </script>
