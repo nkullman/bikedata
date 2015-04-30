@@ -55,13 +55,18 @@ d3.csv("fremont.csv", function(csv) //load data
 
 	var temp_selection = [30, 95];
 	var precip_selection = [0, 2.49];
+	var time_selection = [0, 365];
 	
 	var temp_scale = d3.scale.linear()
 		.domain(temp_selection)
 		.range([0,barwidth]);
 	
-	var precip_scale = d3.scale.linear()
+	var precip_scale = d3.scale.sqrt()
 		.domain(precip_selection)
+		.range([0,barwidth]);
+	
+	var time_scale = d3.scale.linear()
+		.domain([0, 730])
 		.range([0,barwidth]);
 
 	var temp_brush = d3.svg.brush()
@@ -103,6 +108,22 @@ d3.csv("fremont.csv", function(csv) //load data
 		.call(precip_brush)
 		.selectAll("rect")
 		.attr("height", barheight);
+	
+	var time_brush = d3.svg.brush()
+		.x(time_scale)
+		.on("brush", time_brushed);
+	var timebar = d3.select("body")
+		.append("svg")
+		.attr("width", barwidth)
+		.attr("height", barheight);
+	timebar.append("g")
+		.attr("class", "x axis")
+		.call(time_axis);
+	timebar.append("g")
+		.attr("class", "brush")
+		.call(time_brush)
+		.selectAll("rect")
+		.attr("height", barheight);
 
 	var data = d3.nest() //initial aggregation
 		.key(function(d) {return d.Direction;})
@@ -133,13 +154,30 @@ d3.csv("fremont.csv", function(csv) //load data
 		{
 			csv_filtered = csv;
 		}
-		csv_filtered = csv_filtered.filter(function(d)
+		
+		if (time_selection[0] < time_selection[1])
 		{
-			return temp_selection[0] <= d.Max_TemperatureF &&
-				d.Max_TemperatureF <= temp_selection[1] &&
-				precip_selection[0] <= d.PrecipitationIn &&
-				d.PrecipitationIn <= precip_selection[1];
-		});
+			csv_filtered = csv_filtered.filter(function(d)
+			{
+				return temp_selection[0] <= d.Max_TemperatureF &&
+					d.Max_TemperatureF <= temp_selection[1] &&
+					precip_selection[0] <= d.PrecipitationIn &&
+					d.PrecipitationIn <= precip_selection[1] &&
+					time_selection[0] <= d.daynum &&
+					d.daynum <= time_selection[1];
+			});
+		} else {
+			csv_filtered = csv_filtered.filter(function(d)
+			{
+				return temp_selection[0] <= d.Max_TemperatureF &&
+					d.Max_TemperatureF <= temp_selection[1] &&
+					precip_selection[0] <= d.PrecipitationIn &&
+					d.PrecipitationIn <= precip_selection[1] &&
+					time_selection[0] >= d.daynum &&
+					d.daynum >= time_selection[1];
+			});
+		}
+		
 		
 		data = d3.nest()
 		.key(function(d) {return d.Direction;})
@@ -162,6 +200,11 @@ d3.csv("fremont.csv", function(csv) //load data
 	function precip_brushed()
 	{
 		precip_selection = precip_brush.empty() ? precip_scale.domain() : precip_brush.extent();
+		change();
+	}
+	function time_brushed()
+	{
+		time_selection = time_brush.empty() ? time_scale.domain() : precip_brush.extent();
 		change();
 	}
 });
