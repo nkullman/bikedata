@@ -149,9 +149,9 @@
 							});
 							
 						// redraw y-axis? Just draws on top... will need to figure this out better later
-						svg.append("g")
-							.attr("class", "axis")
-							.attr("transform", "translate("+(hpadding)+", 0)")
+						svg.select(".y.axis")
+							.transition()
+							.duration(1000)
 							.call(yAxis);
 					});
 			};
