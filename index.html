@@ -205,6 +205,8 @@ d3.csv("fremont.csv", function(csv) //load data
 	function time_brushed()
 	{
 		time_selection = time_brush.empty() ? time_scale.domain() : precip_brush.extent();
+		time_selection[0] = time_selection[0] % 365;
+		time_selection[1] = time_selection[1] % 365;
 		change();
 	}
 });
