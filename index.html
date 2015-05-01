@@ -44,7 +44,9 @@ svg {
   <label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
   <label><input type="radio" name="dataset" value="weekends">Weekends</label>
 </form>
-Max Temperature:
+<p id="temp">Max Temperature:</p>
+<p id="precip">Precipitation:</p>
+<p id="time">Day of Year:</p>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -76,7 +78,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.scale(temp_scale)
 		.orient("bottom")
 		.ticks(5);
-	var tempbar = d3.select("body")
+	var tempbar = d3.select("#temp")
 		.append("svg")
 		.attr("width", barwidth)
 		.attr("height", barheight);
@@ -96,7 +98,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.scale(precip_scale)
 		.orient("bottom")
 		.ticks(5);
-	var precipbar = d3.select("body")
+	var precipbar = d3.select("#precip")
 		.append("svg")
 		.attr("width", barwidth)
 		.attr("height", barheight);
@@ -116,7 +118,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.scale(time_scale)
 		.orient("bottum")
 		.ticks(5);
-	var timebar = d3.select("body")
+	var timebar = d3.select("#time")
 		.append("svg")
 		.attr("width", barwidth)
 		.attr("height", barheight);
