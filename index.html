@@ -49,12 +49,32 @@ svg {
 <p id="time">Day of Year:</p>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
+	
+var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
+	barwidth = 200,
+	barheight = 20;
+
+function build_bar(selector, axis, brush)
+{
+	var svg = d3.select(selector)
+		.append("svg")
+		.attr("width", barwidth + barmargin.left + barmargin.right)
+		.attr("height", barheight + barmargin.top + barmargin.bottom)
+		.append("g")
+			.attr("transform", "translate(" + barmargin.left + "," + barmargin.top + ")");
+	svg.append("g")
+		.attr("class", "x axis")
+		.call(axis);
+	svg.append("g")
+		.attr("class", "brush")
+		.call(brush)
+		.selectAll("rect")
+		.attr("height", barheight);
+	return svg;
+}
 
 d3.csv("fremont.csv", function(csv) //load data
 {
-	var barwidth = 200,
-		barheight = 20;
-
 	var temp_selection = [30, 95];
 	var precip_selection = [0, 2.49];
 	var time_selection = [0, 365];
@@ -78,18 +98,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.scale(temp_scale)
 		.orient("bottom")
 		.ticks(5);
-	var tempbar = d3.select("#temp")
-		.append("svg")
-		.attr("width", barwidth)
-		.attr("height", barheight);
-	tempbar.append("g")
-		.attr("class", "x axis")
-		.call(temp_axis);
-	tempbar.append("g")
-		.attr("class", "brush")
-		.call(temp_brush)
-		.selectAll("rect")
-		.attr("height", barheight);
+	build_bar("#temp", temp_axis, temp_brush);
 	
 	var precip_brush = d3.svg.brush()
 		.x(precip_scale)
@@ -98,18 +107,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.scale(precip_scale)
 		.orient("bottom")
 		.ticks(5);
-	var precipbar = d3.select("#precip")
-		.append("svg")
-		.attr("width", barwidth)
-		.attr("height", barheight);
-	precipbar.append("g")
-		.attr("class", "x axis")
-		.call(precip_axis);
-	precipbar.append("g")
-		.attr("class", "brush")
-		.call(precip_brush)
-		.selectAll("rect")
-		.attr("height", barheight);
+	build_bar("#precip", precip_axis, precip_brush);
 	
 	var time_brush = d3.svg.brush()
 		.x(time_scale)
@@ -118,18 +116,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.scale(time_scale)
 		.orient("bottum")
 		.ticks(5);
-	var timebar = d3.select("#time")
-		.append("svg")
-		.attr("width", barwidth)
-		.attr("height", barheight);
-	timebar.append("g")
-		.attr("class", "x axis")
-		.call(time_axis);
-	timebar.append("g")
-		.attr("class", "brush")
-		.call(time_brush)
-		.selectAll("rect")
-		.attr("height", barheight);
+	build_bar("#time", time_axis, time_brush);
 
 	var data = d3.nest() //initial aggregation
 		.key(function(d) {return d.Direction;})
