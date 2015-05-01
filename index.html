@@ -66,7 +66,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.range([0,barwidth]);
 	
 	var time_scale = d3.scale.linear()
-		.domain([0, 730])
+		.domain([0, 729])
 		.range([0,barwidth]);
 
 	var temp_brush = d3.svg.brush()
@@ -112,6 +112,10 @@ d3.csv("fremont.csv", function(csv) //load data
 	var time_brush = d3.svg.brush()
 		.x(time_scale)
 		.on("brush", time_brushed);
+	var time_axis = d3.svg.axis()
+		.scale(time_scale)
+		.orient("bottum")
+		.ticks(5);
 	var timebar = d3.select("body")
 		.append("svg")
 		.attr("width", barwidth)
@@ -173,8 +177,8 @@ d3.csv("fremont.csv", function(csv) //load data
 					d.Max_TemperatureF <= temp_selection[1] &&
 					precip_selection[0] <= d.PrecipitationIn &&
 					d.PrecipitationIn <= precip_selection[1] &&
-					time_selection[0] >= d.daynum &&
-					d.daynum >= time_selection[1];
+					(time_selection[0] <= d.daynum ||
+					d.daynum <= time_selection[1]);
 			});
 		}
 		
@@ -204,7 +208,7 @@ d3.csv("fremont.csv", function(csv) //load data
 	}
 	function time_brushed()
 	{
-		time_selection = time_brush.empty() ? time_scale.domain() : precip_brush.extent();
+		time_selection = time_brush.empty() ? time_scale.domain() : time_brush.extent();
 		time_selection[0] = time_selection[0] % 365;
 		time_selection[1] = time_selection[1] % 365;
 		change();
