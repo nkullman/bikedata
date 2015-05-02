@@ -282,7 +282,7 @@ d3.csv("fremont.csv", function(csv) //load data
 			.style("stroke", "steelblue")
 			.append("title")
 			.text(function(d) {
-				return d.key;
+				return "Date: " + d.key;
 			});
 	
 	// draw all SB day lines
@@ -292,7 +292,11 @@ d3.csv("fremont.csv", function(csv) //load data
 		.append("path")
 			.attr("class", "line sbday")
 			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", "brown");
+			.style("stroke", "brown")
+			.append("title")
+			.text(function(d) {
+				return "Date: " + d.key;
+			});
 	 
 	 // draw line for NB average
 	 svg.append("path")
