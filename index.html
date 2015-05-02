@@ -24,7 +24,6 @@ svg {
 
 .line {
   fill: none;
-  /*stroke: steelblue;*/
   stroke-width: 0.5px;
 }
 
@@ -36,17 +35,21 @@ svg {
 
 .sbday{
 	opacity: 0.1;
+	stroke: brown;
 }
 
 .nbday{
 	opacity: 0.1;
+	stroke: steelblue;
 }
 
-.nbavg,
+.nbavg {
+	stroke-width: 5px;
+	stroke: skyblue;
+}
 .sbavg{
-	opacity: 1.0;
-	stroke-width: 10px;
-	stroke: #000;
+	stroke-width: 5px;
+	stroke: sandybrown;
 }
 
 #sidebar {
@@ -157,6 +160,7 @@ var svg = d3.select("body").append("svg")
 
 d3.csv("fremont.csv", function(thedata) //load data
 {
+	var day_selection = 0;
 	var temp_selection = [30, 95];
 	var precip_selection = [0, 2.49];
 	var time_selection = [0, 365];
@@ -275,8 +279,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.enter()
 		.append("path")
 			.attr("class", "line nbday")
-			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", "steelblue");
+			.attr("d", function(d) { return line(d.values); });
 	
 	// draw all SB day lines
 	var sbday = svg.selectAll(".sbday")
@@ -284,8 +287,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.enter()
 		.append("path")
 			.attr("class", "line sbday")
-			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", "brown");
+			.attr("d", function(d) { return line(d.values); });
 	 
 	 // draw line for NB average
 	 svg.append("path")
@@ -303,16 +305,15 @@ d3.csv("fremont.csv", function(thedata) //load data
 	var numdays = Math.ceil(thedata.length/48);
 	
 	d3.selectAll("input")
-		.on("change", change);
+		.on("change", day_changed);
 	
 	function change()
 	{
-		//Update data based on day of week
-		var value = this.value;
+		//Update data
 		var csv_filtered;
-		if (value == "weekdays") {
+		if (day_selection == 1) {
 			csv_filtered = thedata.filter(function(d) { return d.IsWeekday == "TRUE"; });
-		} else if (value == "weekends") {
+		} else if (day_selection == 2) {
 			csv_filtered = thedata.filter(function(d) { return d.IsWeekday == "FALSE"; });
 		} else {
 			csv_filtered = thedata;
@@ -386,8 +387,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		nblines.enter()
 			.append("path")
 			.attr("class", "line nbday")
-			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", "steelblue");
+			.attr("d", function(d) { return line(d.values); });
 		//take care of outgoing nb lines - delete them
 		nblines.exit()
 			.transition()
@@ -397,8 +397,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//take care of nb lines being updated - recalc data (this grouping should be empty...)
 		nblines.transition()
 			.duration(1000)
-			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", "steelblue");
+			.attr("d", function(d) { return line(d.values); });
 			
 		/* Update SB lines */
 		var sblines = svg.selectAll(".sbday")
@@ -407,8 +406,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		sblines.enter()
 			.append("path")
 			.attr("class", "line sbday")
-			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", "brown");
+			.attr("d", function(d) { return line(d.values); });
 		//take care of outgoing sb lines - delete them
 		sblines.exit()
 			.transition()
@@ -418,8 +416,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//take care of sb lines being updated - recalc data (this grouping should be empty...)
 		sblines.transition()
 			.duration(1000)
-			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", "brown");
+			.attr("d", function(d) { return line(d.values); });
 			
 		/* Update average lines */
 		// update NB average
@@ -434,6 +431,20 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.transition()
 			.duration(1000)
 			.attr("d", function(d) { return avgline(d); });
+	}
+	
+	function day_changed()
+	{
+		if (this.value == "weekdays")
+		{
+			day_selection = 1;
+		} else if (this.value == "weekends")
+		{
+			day_selection = 2;
+		} else {
+			day_selection = 0;
+		}
+		change();
 	}
 	
 	function temp_brushed()
