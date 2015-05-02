@@ -400,7 +400,11 @@ d3.csv("fremont.csv", function(thedata) //load data
 		nblines.enter()
 			.append("path")
 			.attr("class", "line nbday")
-			.attr("d", function(d) { return line(d.values); });
+			.attr("d", function(d) { return line(d.values); })
+			.append("title")
+			.text(function(d) {
+				return "Date: " + d.key;
+			});
 		//take care of outgoing nb lines - delete them
 		nblines.exit()
 			.transition()
@@ -419,7 +423,11 @@ d3.csv("fremont.csv", function(thedata) //load data
 		sblines.enter()
 			.append("path")
 			.attr("class", "line sbday")
-			.attr("d", function(d) { return line(d.values); });
+			.attr("d", function(d) { return line(d.values); })
+			.append("title")
+			.text(function(d) {
+				return "Date: " + d.key;
+			});
 		//take care of outgoing sb lines - delete them
 		sblines.exit()
 			.transition()
