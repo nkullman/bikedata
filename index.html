@@ -133,8 +133,8 @@ var yAxis = d3.svg.axis()
 	
 var line = d3.svg.line()
 	.interpolate("linear")
-    .x(function(d) { return xScale(d.time); })
-    .y(function(d) { return yScale(d.count); });
+    .x(function(d) { return xScale(parseTime(d.key)); })
+    .y(function(d) { return yScale(d.values); });
 	
 var avgline = d3.svg.line()
 	.x(function(d) { return xScale(parseTime(d.key)); })
@@ -223,52 +223,30 @@ d3.csv("fremont.csv", function(thedata) //load data
 	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(d3.ascending)
+		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
-		.map(thedata.filter(function(d) { return d.Direction === " SB";} ));
+		.entries(thedata.filter(function(d) { return d.Direction === " SB";} ));
 		
 	// each individual day's counts - northbound
 	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(d3.ascending)
+		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
-		.map(thedata.filter(function(d) { return d.Direction === " NB";} ));
-		
-	// different formatting of NB count data to match mbostock's example:
-	// http://bl.ocks.org/mbostock/3884955
-	var daysNB = d3.keys(nbcycledata).map(function(date) {
-		return {
-			name: date,
-			values: thedata.filter(function(d) { return (d.Date === date && d.Direction === " NB"); }).map(function(d) {
-				return { time: parseTime(d.Time), count: +d.CyclistCount };
-			})
-		};
-	});
-	
-	// different formatting of SB count data to match mbostock's example:
-	// http://bl.ocks.org/mbostock/3884955
-	var daysSB = d3.keys(sbcycledata).map(function(date) {
-		return {
-			name: date,
-			values: thedata.filter(function(d) { return (d.Date === date && d.Direction === " SB"); }).map(function(d) {
-				return { time: parseTime(d.Time), count: +d.CyclistCount };
-			})
-		};
-	});
+		.entries(thedata.filter(function(d) { return d.Direction === " NB";} ));
 	
 	// define x-domain
 	xScale.domain(d3.extent(thedata, function(d) { return parseTime(d.Time); }));
 	
 	// define y-domain
 	yScale.domain([
-		d3.min(daysNB, function(c) { return d3.min(c.values, function(v) { return v.count; }); }),
+		d3.min(nbcycledata, function(c) { return d3.min(c.values, function(v) { return v.values; }); }),
 		1000
 		//d3.max(daysNB, function(c) { return d3.max(c.values, function(v) { return v.count; }); })
 	]);
@@ -292,7 +270,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 	
 	// draw all NB day lines
 	var nbday = svg.selectAll(".nbday")
-		.data(daysNB)
+		.data(nbcycledata)
 		.enter()
 		.append("path")
 			.attr("class", "line nbday")
@@ -301,7 +279,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 	
 	// draw all SB day lines
 	var sbday = svg.selectAll(".sbday")
-		.data(daysSB)
+		.data(sbcycledata)
 		.enter()
 		.append("path")
 			.attr("class", "line sbday")
@@ -380,52 +358,28 @@ d3.csv("fremont.csv", function(thedata) //load data
 				return d3.mean(d, function(g) {return +g.CyclistCount;});
 			})
 			.entries(csv_filtered.filter(function(d) { return d.Direction === " SB";} ));
-	/* We could eliminate sbcycledata and nbcycledata if we could figure out how to get a list of all days in order
-		Only ever used in daysSB and days NB: "d3.keys(nbcycledata)..." */
 		
 		// each individual day's counts - southbound
 	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(d3.ascending)
+		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
-		.map(csv_filtered.filter(function(d) { return d.Direction === " SB";} ));
+		.entries(csv_filtered.filter(function(d) { return d.Direction === " SB";} ));
 		
 	// each individual day's counts - northbound
 	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(d3.ascending)
+		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
-		.map(csv_filtered.filter(function(d) { return d.Direction === " NB";} ));
-		
-	// different formatting of NB count data to match mbostock's example:
-	// http://bl.ocks.org/mbostock/3884955
-	var daysNB = d3.keys(nbcycledata).map(function(date) {
-		return {
-			name: date,
-			values: csv_filtered.filter(function(d) { return (d.Date === date && d.Direction === " NB"); }).map(function(d) {
-				return { time: parseTime(d.Time), count: +d.CyclistCount };
-			})
-		};
-	});
-	
-	// different formatting of SB count data to match mbostock's example:
-	// http://bl.ocks.org/mbostock/3884955
-	var daysSB = d3.keys(sbcycledata).map(function(date) {
-		return {
-			name: date,
-			values: csv_filtered.filter(function(d) { return (d.Date === date && d.Direction === " SB"); }).map(function(d) {
-				return { time: parseTime(d.Time), count: +d.CyclistCount };
-			})
-		};
-	});
+		.entries(csv_filtered.filter(function(d) { return d.Direction === " NB";} ));
 		
 		
 		/* Update average lines */
@@ -444,7 +398,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			
 		/* Update NB lines */
 		var nblines = svg.selectAll(".nbday")
-			.data(daysNB);
+			.data(nbcycledata);
 		//take care of incoming nb lines - draw them
 		nblines.enter()
 			.append("path")
@@ -465,7 +419,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			
 		/* Update SB lines */
 		var sblines = svg.selectAll(".sbday")
-			.data(daysSB);
+			.data(sbcycledata);
 		//take care of incoming sb lines - draw them
 		sblines.enter()
 			.append("path")
