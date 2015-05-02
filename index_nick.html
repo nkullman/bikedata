@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
+
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: auto;
@@ -11,10 +12,20 @@ body {
 text {
   font: 10px sans-serif;
 }
+form {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
 
 svg {
   font: 10px sans-serif;
 }
+
+/*.area {
+  fill: steelblue;
+  clip-path: url(#clip);
+}*/
 
 .axis path,
 .axis line {
@@ -49,59 +60,24 @@ svg {
 	stroke-width: 10px;
 	stroke: #000;
 }
-
-</style>
-<div id="sidebar">
-<table>
-	<tr>
-		<td colspan="2">
-			<form>
-  				<label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
-				<label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
-				<label><input type="radio" name="dataset" value="weekends">Weekends</label>
-			</form>
-		</td>
-	</tr>
-	<tr>
-		<td>Max Temperature:</td>
-		<td id="temp"></td>
-	</tr>
-	<tr>
-		<td>Precipitation:</td>
-		<td id="precip"></td>
-	</tr>
-	<tr>
-		<td>Day of Year:</td>
-		<td id="time"></td>
-	</tr>
-</table>
-</div>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-	
-var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
-	barwidth = 200,
-	barheight = 20;
-
-function build_bar(selector, axis, brush)
-{
-	var svg = d3.select(selector)
-		.append("svg")
-		.attr("width", barwidth + barmargin.left + barmargin.right)
-		.attr("height", barheight + barmargin.top + barmargin.bottom)
-		.append("g")
-			.attr("transform", "translate(" + barmargin.left + "," + barmargin.top + ")");
-	svg.append("g")
-		.attr("class", "x axis")
-		.call(axis);
-	svg.append("g")
-		.attr("class", "brush")
-		.call(brush)
-		.selectAll("rect")
-		.attr("height", barheight);
-	return svg;
+/*
+.nbavg{
+	stroke: brown;
 }
 
+.sbavg{
+	stroke: steelblue;
+}*/
+
+</style>
+<form>
+  <label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
+  <label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
+  <label><input type="radio" name="dataset" value="weekends">Weekends</label>
+</form>
+Max Temperature:
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
 // define time entries' format
 var parseTime = d3.time.format("%I:%M:%S %p").parse;
 // global variable for dataset
@@ -150,55 +126,44 @@ function sortTime(a, b) {
 	return parseTime(a) - parseTime(b);
 }
 
-d3.csv("fremont.csv", function(thedata) //load data
-{
-	var temp_selection = [30, 95];
-	var precip_selection = [0, 2.49];
-	var time_selection = [0, 365];
+d3.csv("fremont.csv", function(csv) //load data
+{	
+	thedata = csv;
 	
+	var barwidth = 200,
+		barheight = 20;
+
+	// original temp selection is all
+	var temp_selection = d3.extent(csv, function(d) {return +d.Max_TemperatureF;} );
+	// defin scale for temp brush
 	var temp_scale = d3.scale.linear()
 		.domain(temp_selection)
 		.range([0,barwidth]);
-	
-	var precip_scale = d3.scale.sqrt()
-		.domain([0,2.5])
-		.range([0,barwidth]);
-	
-	var time_scale = d3.scale.linear()
-		.domain([0, 729])
-		.range([0,barwidth]);
-
+	// define brusher for temp
 	var temp_brush = d3.svg.brush()
 		.x(temp_scale)
-		.on("brush", temp_brushed);
+		.on("brush", brushed);
+	// define axis for temp brush
 	var temp_axis = d3.svg.axis()
 		.scale(temp_scale)
 		.orient("bottom")
-		.tickValues([30, 43, 56, 69, 82, 95]);
-	build_bar("#temp", temp_axis, temp_brush);
-	
-	var precip_brush = d3.svg.brush()
-		.x(precip_scale)
-		.on("brush", precip_brushed);
-	var precip_axis = d3.svg.axis()
-		.scale(precip_scale)
-		.orient("bottom")
 		.ticks(5);
-	build_bar("#precip", precip_axis, precip_brush);
-	
-	var time_brush = d3.svg.brush()
-		.x(time_scale)
-		.on("brush", time_brushed);
-	var time_axis = d3.svg.axis()
-		.scale(time_scale)
-		.orient("bottum")
-		.tickValues([0, 120, 243, 365, 485, 608, 729])
-		.tickFormat(function(d, i)
-		{
-			return ["Jan", "May", "Sept"][i % 3];
-		});
-	build_bar("#time", time_axis, time_brush);
-
+	// map the temp bar
+	var tempbar = d3.select("body")
+		.append("svg")
+		.attr("width", barwidth)
+		.attr("height", barheight);
+	// apply axis
+	tempbar.append("g")
+		.attr("class", "x axis")
+		.call(temp_axis);
+	// define brush
+	tempbar.append("g")
+		.attr("class", "brush")
+		.call(temp_brush)
+		.selectAll("rect")
+		.attr("height", barheight);
+		
 	// dataset holding the average at each hour over all days
 	// (initial aggregation for the checked "all")
 	var NBavgdata = d3.nest() //average over all days aggregation
@@ -321,7 +286,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.attr("d", function(d) { return avgline(d); });
 	
 		
-	var numdays = Math.ceil(thedata.length/48);
+	var numdays = Math.ceil(csv.length/48);
 	
 	d3.selectAll("input")
 		.on("change", change);
@@ -338,30 +303,11 @@ d3.csv("fremont.csv", function(thedata) //load data
 		} else {
 			csv_filtered = thedata;
 		}
-		
-		//Update data based on sliders
-		if (time_selection[0] < time_selection[1])
-		{
-			csv_filtered = csv_filtered.filter(function(d)
-			{
-				return temp_selection[0] <= d.Max_TemperatureF &&
-					d.Max_TemperatureF <= temp_selection[1] &&
-					precip_selection[0] <= d.PrecipitationIn &&
-					d.PrecipitationIn <= precip_selection[1] &&
-					time_selection[0] <= d.daynum &&
-					d.daynum <= time_selection[1];
-			});
-		} else {
-			csv_filtered = csv_filtered.filter(function(d)
-			{
-				return temp_selection[0] <= d.Max_TemperatureF &&
-					d.Max_TemperatureF <= temp_selection[1] &&
-					precip_selection[0] <= d.PrecipitationIn &&
-					d.PrecipitationIn <= precip_selection[1] &&
-					(time_selection[0] <= d.daynum ||
-					d.daynum <= time_selection[1]);
-			});
-		}
+		//Update data based on temp
+		csv_filtered = csv_filtered.filter(function(d){
+			return temp_selection[0] <= d.Max_TemperatureF &&
+				d.Max_TemperatureF <= temp_selection[1];
+		});
 		//new averaged data for NB traffic
 		var NBavgdata = d3.nest() //average over all days aggregation
 			.key(function(d) {return d.Time;})
@@ -483,25 +429,20 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.duration(1000)
 			.attr("d", function(d) { return line(d.values); })
 			.style("stroke", "brown");
+		
+			
+			
+		
+			
+		numdays = Math.ceil(csv_filtered.length/48);
+		
+		console.log(numdays);
 	}
 	
-	function temp_brushed()
+	function brushed()
 	{
 		temp_selection = temp_brush.empty() ? temp_scale.domain() : temp_brush.extent();
 		change();
 	}
-	function precip_brushed()
-	{
-		precip_selection = precip_brush.empty() ? precip_scale.domain() : precip_brush.extent();
-		change();
-	}
-	function time_brushed()
-	{
-		time_selection = time_brush.empty() ? time_scale.domain() : time_brush.extent();
-		time_selection[0] = time_selection[0] % 365;
-		time_selection[1] = time_selection[1] % 365;
-		change();
-	}
 });
 </script>
-</body>
