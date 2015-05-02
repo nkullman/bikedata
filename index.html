@@ -279,7 +279,9 @@ d3.csv("fremont.csv", function(thedata) //load data
 	viz_axes.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+	  .append("text")
+	  .text("Time");
 	  
 	//draw y-axis:
 	viz_axes.append("g")
