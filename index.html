@@ -177,6 +177,7 @@ var viz_axes = viz.append("g");
 d3.csv("fremont.csv", function(thedata) //load data
 {
 	var day_selection = 0;
+
 	var temp_selection = [30, 95];
 	var precip_selection = [0, 2.49];
 	var time_selection = [0, 365];
@@ -295,7 +296,11 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.enter()
 		.append("path")
 			.attr("class", "line nbday")
-			.attr("d", function(d) { return line(d.values); });
+			.attr("d", function(d) { return line(d.values); })
+			.append("title")
+			.text(function(d) {
+				return "Date: " + d.key;
+			});
 	
 	// draw all SB day lines
 	var sbday = viz_alldays.selectAll(".sbday")
@@ -303,7 +308,11 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.enter()
 		.append("path")
 			.attr("class", "line sbday")
-			.attr("d", function(d) { return line(d.values); });
+			.attr("d", function(d) { return line(d.values); })
+			.append("title")
+			.text(function(d) {
+				return "Date: " + d.key;
+			});
 	 
 	 // draw line for NB average
 	 viz_agg.append("path")
