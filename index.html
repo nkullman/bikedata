@@ -288,6 +288,18 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.append("title")
 			.text(function(d) {
 				return "Date: " + d.key;
+			})
+			.on("mouseover", function() {
+				console.log("got one")
+				d3.select(this)
+					.attr("stroke-width", "2px")
+					.style("opacity", "1.0");
+			})
+			.on("mouseout", function() {
+				d3.select(this)
+					.transition().duration(300)
+					.attr("stroke-width", "0.5px")	
+					.style("opacity", "0.1");
 			});
 	
 	// draw all SB day lines
