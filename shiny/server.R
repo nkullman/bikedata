@@ -10,19 +10,17 @@ function(input, output) {
     #filter by weekday
     if (input$weekday == "Weekdays")
     {
-      df = fremont[fremont$IsWeekday,]
+      df = fremont %>% filter(IsWeekday)
     } else if (input$weekday == "Weekends")
     {
-      df = fremont[!fremont$IsWeekday,]
+      df = fremont %>% filter(!IsWeekday)
     } else {
       df = fremont
     }
     
-    #filter by temperature
-    df = df[input$temp[1] <= df$Max_TemperatureF & df$Max_TemperatureF <= input$temp[2],]
-    
-    #filter by precipitation
-    df = df[input$precip[1] <= df$PrecipitationIn & df$PrecipitationIn <= input$precip[2],]
+    #filter by temperature and precipitation
+    df = df %>% filter(input$temp[1] <= Max_TemperatureF, Max_TemperatureF <= input$temp[2]) %>%
+      filter(input$precip[1] <= PrecipitationIn, PrecipitationIn <= input$precip[2])
     
     output$numdays = renderText({sprintf("Averaged over %d days", ceiling(dim(df)[1]/48))})
     

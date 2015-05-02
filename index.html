@@ -7,13 +7,13 @@ body {
   position: relative;
   width: 960px;
 }
+
 text {
   font: 10px sans-serif;
 }
-form {
-  position: absolute;
-  right: 10px;
-  top: 10px;
+
+svg {
+  font: 10px sans-serif;
 }
 
 .axis path,
@@ -23,51 +23,118 @@ form {
   shape-rendering: crispEdges;
 }
 
-.x.axis path {
-  /*display: none;*/
-}
-
 .line {
   fill: none;
   /*stroke: steelblue;*/
-  stroke-width: 0.3px;
+  stroke-width: 0.5px;
+}
+
+.brush .extent {
+  stroke: steelblue;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+.sbday{
+	opacity: 0.1;
+}
+
+.nbday{
+	opacity: 0.1;
+}
+
+.nbavg,
+.sbavg{
+	opacity: 1.0;
+	stroke-width: 10px;
+	stroke: #000;
 }
 
 </style>
-<form>
-  <label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
-  <label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
-  <label><input type="radio" name="dataset" value="weekends">Weekends</label>
-</form>
-<script type = "text/javascript" src="d3/d3.js"></script>
+<div id="sidebar">
+<table>
+	<tr>
+		<td colspan="2">
+			<form>
+  				<label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
+				<label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
+				<label><input type="radio" name="dataset" value="weekends">Weekends</label>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td>Max Temperature:</td>
+		<td id="temp"></td>
+	</tr>
+	<tr>
+		<td>Precipitation:</td>
+		<td id="precip"></td>
+	</tr>
+	<tr>
+		<td>Day of Year:</td>
+		<td id="time"></td>
+	</tr>
+</table>
+</div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
+	
+var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
+	barwidth = 200,
+	barheight = 20;
+
+function build_bar(selector, axis, brush)
+{
+	var svg = d3.select(selector)
+		.append("svg")
+		.attr("width", barwidth + barmargin.left + barmargin.right)
+		.attr("height", barheight + barmargin.top + barmargin.bottom)
+		.append("g")
+			.attr("transform", "translate(" + barmargin.left + "," + barmargin.top + ")");
+	svg.append("g")
+		.attr("class", "x axis")
+		.call(axis);
+	svg.append("g")
+		.attr("class", "brush")
+		.call(brush)
+		.selectAll("rect")
+		.attr("height", barheight);
+	return svg;
+}
+
+// global variable for dataset
 var thedata;
+
+var numEntriesPerDay = 48;
 
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 	
 var parseDate = d3.time.format("%d-%b-%y").parse;
-var parseTime = d3.time.format("%I:%M:%S %p").parse;
 
-var xScale = d3.time.scale()
+var xScale = d3.scale.linear()
     .range([0, width]);
 
 var yScale = d3.scale.linear()
     .range([height, 0]);
-
+	
 var xAxis = d3.svg.axis()
     .scale(xScale)
-    .orient("bottom")
-	.tickFormat(d3.time.format("%I %p"));
+    .orient("bottom");
 
 var yAxis = d3.svg.axis()
     .scale(yScale)
     .orient("left");
 	
 var line = d3.svg.line()
-    .x(function(d) { return xScale(d.Time); })
-    .y(function(d) { return yScale(d.CyclistCount); });
+	.interpolate("linear")
+    .x(function(d) { return xScale(d.key); })
+    .y(function(d) { return yScale(d.values); });
+	
+var avgline = d3.svg.line()
+	.x(function(d) { return xScale(d.key); })
+	.y(function(d) { return yScale(+d.values); });
 	
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -75,55 +142,110 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Handle CSV
-d3.csv("fremont.csv", function(error, csv) {
-	if (error) {console.log(error);	}
+d3.csv("fremont.csv", function(thedata) //load data
+{
+	var temp_selection = [30, 95];
+	var precip_selection = [0, 2.49];
+	var time_selection = [0, 365];
 	
-	thedata = csv;
+	var temp_scale = d3.scale.linear()
+		.domain(temp_selection)
+		.range([0,barwidth]);
 	
-	// define data
-	var data = d3.nest()
-	/*thedata = d3.nest() */
-		.key(function(d) {return d.Direction;})
+	var precip_scale = d3.scale.sqrt()
+		.domain([0,2.5])
+		.range([0,barwidth]);
+	
+	var time_scale = d3.scale.linear()
+		.domain([0, 729])
+		.range([0,barwidth]);
+
+	var temp_brush = d3.svg.brush()
+		.x(temp_scale)
+		.on("brush", temp_brushed);
+	var temp_axis = d3.svg.axis()
+		.scale(temp_scale)
+		.orient("bottom")
+		.tickValues([30, 43, 56, 69, 82, 95]);
+	build_bar("#temp", temp_axis, temp_brush);
+	
+	var precip_brush = d3.svg.brush()
+		.x(precip_scale)
+		.on("brush", precip_brushed);
+	var precip_axis = d3.svg.axis()
+		.scale(precip_scale)
+		.orient("bottom")
+		.ticks(5);
+	build_bar("#precip", precip_axis, precip_brush);
+	
+	var time_brush = d3.svg.brush()
+		.x(time_scale)
+		.on("brush", time_brushed);
+	var time_axis = d3.svg.axis()
+		.scale(time_scale)
+		.orient("bottom")
+		.tickValues([0, 120, 243, 365, 485, 608, 729])
+		.tickFormat(function(d, i)
+		{
+			return ["Jan", "May", "Sept"][i % 3];
+		});
+	build_bar("#time", time_axis, time_brush);
+
+	// dataset holding the average at each hour over all days
+	// (initial aggregation for the checked "all")
+	var NBavgdata = d3.nest() //average over all days aggregation
 		.key(function(d) {return d.Time;})
-		.sortKeys(d3.ascending)
-		.rollup( function(d) {
+		.rollup(function(d)
+		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
-		.map(csv);
+		.entries(thedata.filter(function(d) { return d.Direction === " NB";} ));
 	
-	// for each data element, redefine time and count
-	thedata.forEach(function(d) {
-		d.Time = parseTime(d.Time);
-		d.CyclistCount = +d.CyclistCount;
-	});
+	var SBavgdata = d3.nest() //average over all days aggregation
+		.key(function(d) {return d.Time;})
+		.rollup(function(d)
+		{
+			return d3.mean(d, function(g) {return +g.CyclistCount;});
+		})
+		.entries(thedata.filter(function(d) { return d.Direction === " SB";} ));
 	
-	// define x and y domains
-	xScale.domain(d3.extent(thedata, function (d) { return d.Time; }));
-	yScale.domain(d3.extent(thedata, function (d) { return d.CyclistCount; }));
+	// each individual day's counts - southbound
+	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
+		.key(function(d) {return d.Date;})
+		.key(function(d) {return d.Time;})
+		.rollup(function(d)
+		{
+			return d3.mean(d, function(g) {return +g.CyclistCount;});
+		})
+		.entries(thedata.filter(function(d) { return d.Direction === " SB";} ));
+		
+	// each individual day's counts - northbound
+	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
+		.key(function(d) {return d.Date;})
+		.key(function(d) {return d.Time;})
+		.rollup(function(d)
+		{
+			return d3.mean(d, function(g) {return +g.CyclistCount;});
+		})
+		.entries(thedata.filter(function(d) { return d.Direction === " NB";} ));
 	
-	// draw NB thedata
-	svg.append("path")
-		.datum(thedata.filter(function (d) { return d.Direction === " NB";}))
-		.attr("class", "line")
-		.attr("d", line)
-		.attr("stroke", "steelblue");
-	// draw SB thedata
-	svg.append("path")
-		.datum(thedata.filter(function (d) { return d.Direction !== " NB";}))
-		.attr("class", "line")
-		.attr("d", line)
-		.attr("stroke", "brown");
+	// define x-domain
+	xScale.domain([0,23]);
 	
-	// draw x-axis
+	// define y-domain
+	yScale.domain([
+		d3.min(nbcycledata, function(c) { return d3.min(c.values, function(v) { return v.values; }); }),
+		1000
+		//d3.max(daysNB, function(c) { return d3.max(c.values, function(v) { return v.count; }); })
+	]);
+	
+	// draw x-axis:
 	svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
-	 /*.append("text")
-		.text("Time of day");*/
-	
-	// draw y-axis
+	  
+	//draw y-axis:
 	svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
@@ -134,46 +256,190 @@ d3.csv("fremont.csv", function(error, csv) {
       .style("text-anchor", "end")
       .text("Cyclists");
 	
+	// draw all NB day lines
+	var nbday = svg.selectAll(".nbday")
+		.data(nbcycledata)
+		.enter()
+		.append("path")
+			.attr("class", "line nbday")
+			.attr("d", function(d) { return line(d.values); })
+			.style("stroke", "steelblue");
 	
-	// Calculate number of days in dataset
-	var numEntriesPerDay = 48;
-	var numdays = Math.ceil(thedata.length/numEntriesPerDay);
+	// draw all SB day lines
+	var sbday = svg.selectAll(".sbday")
+		.data(sbcycledata)
+		.enter()
+		.append("path")
+			.attr("class", "line sbday")
+			.attr("d", function(d) { return line(d.values); })
+			.style("stroke", "brown");
+	 
+	 // draw line for NB average
+	 svg.append("path")
+		.datum(NBavgdata)
+		.attr("class", "line nbavg")
+		.attr("d", function(d) { return avgline(d); });
+	 
+	 // draw line for SB average
+	 svg.append("path")
+		.datum(SBavgdata)
+		.attr("class", "line sbavg")
+		.attr("d", function(d) { return avgline(d); });
 	
-	// first checked is "All Days". Create viz for this
+		
+	var numdays = Math.ceil(thedata.length/48);
 	
-	
-	// Handle change in radio button
 	d3.selectAll("input")
-		.on("change", update);
+		.on("change", change);
 	
-	// Generate vis
-	
-});
-
-// update vis (not actually a vis update at this time)
-function update() {
-
-	// get new setting of radio button
-	var value = this.value;
-	
-	// update the CSV
-	if (value == "weekdays") {
-		csv_filtered = csv.filter(function(d) { return d.IsWeekday == "TRUE"; });
-	} else if (value == "weekends"){
-		csv_filtered = csv.filter(function(d) { return d.IsWeekday == "FALSE"; });
-	} else {
-		csv_filtered = csv;
+	function change()
+	{
+		//Update data based on day of week
+		var value = this.value;
+		var csv_filtered;
+		if (value == "weekdays") {
+			csv_filtered = thedata.filter(function(d) { return d.IsWeekday == "TRUE"; });
+		} else if (value == "weekends") {
+			csv_filtered = thedata.filter(function(d) { return d.IsWeekday == "FALSE"; });
+		} else {
+			csv_filtered = thedata;
+		}
+		
+		//Update data based on sliders
+		if (time_selection[0] < time_selection[1])
+		{
+			csv_filtered = csv_filtered.filter(function(d)
+			{
+				return temp_selection[0] <= d.Max_TemperatureF &&
+					d.Max_TemperatureF <= temp_selection[1] &&
+					precip_selection[0] <= d.PrecipitationIn &&
+					d.PrecipitationIn <= precip_selection[1] &&
+					time_selection[0] <= d.daynum &&
+					d.daynum <= time_selection[1];
+			});
+		} else {
+			csv_filtered = csv_filtered.filter(function(d)
+			{
+				return temp_selection[0] <= d.Max_TemperatureF &&
+					d.Max_TemperatureF <= temp_selection[1] &&
+					precip_selection[0] <= d.PrecipitationIn &&
+					d.PrecipitationIn <= precip_selection[1] &&
+					(time_selection[0] <= d.daynum ||
+					d.daynum <= time_selection[1]);
+			});
+		}
+		//new averaged data for NB traffic
+		var NBavgdata = d3.nest() //average over all days aggregation
+			.key(function(d) {return d.Time;})
+			.rollup(function(d)
+			{
+				return d3.mean(d, function(g) {return +g.CyclistCount;});
+			})
+			.entries(csv_filtered.filter(function(d) { return d.Direction === " NB";} ));
+		//new averaged data for SB traffic
+		var SBavgdata = d3.nest() //average over all days aggregation
+			.key(function(d) {return d.Time;})
+			.rollup(function(d)
+			{
+				return d3.mean(d, function(g) {return +g.CyclistCount;});
+			})
+			.entries(csv_filtered.filter(function(d) { return d.Direction === " SB";} ));
+		
+		// each individual day's counts - southbound
+	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
+		.key(function(d) {return d.Date;})
+		.key(function(d) {return d.Time;})
+		.rollup(function(d)
+		{
+			return d3.mean(d, function(g) {return +g.CyclistCount;});
+		})
+		.entries(csv_filtered.filter(function(d) { return d.Direction === " SB";} ));
+		
+	// each individual day's counts - northbound
+	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
+		.key(function(d) {return d.Date;})
+		.key(function(d) {return d.Time;})
+		.rollup(function(d)
+		{
+			return d3.mean(d, function(g) {return +g.CyclistCount;});
+		})
+		.entries(csv_filtered.filter(function(d) { return d.Direction === " NB";} ));
+		
+		
+		/* Update average lines */
+		// update NB average
+		d3.select(".nbavg")
+			.datum(NBavgdata)
+			.transition()
+			.duration(1000)
+			.attr("d", function(d) { return avgline(d); });
+		//update SB average
+		d3.select(".sbavg")
+			.datum(SBavgdata)
+			.transition()
+			.duration(1000)
+			.attr("d", function(d) { return avgline(d); });
+			
+		/* Update NB lines */
+		var nblines = svg.selectAll(".nbday")
+			.data(nbcycledata);
+		//take care of incoming nb lines - draw them
+		nblines.enter()
+			.append("path")
+			.attr("class", "line nbday")
+			.attr("d", function(d) { return line(d.values); })
+			.style("stroke", "steelblue");
+		//take care of outgoing nb lines - delete them
+		nblines.exit()
+			.transition()
+			.duration(1000)
+			.style("opacity", "0")
+			.remove();
+		//take care of nb lines being updated - recalc data (this grouping should be empty...)
+		nblines.transition()
+			.duration(1000)
+			.attr("d", function(d) { return line(d.values); })
+			.style("stroke", "steelblue");
+			
+		/* Update SB lines */
+		var sblines = svg.selectAll(".sbday")
+			.data(sbcycledata);
+		//take care of incoming sb lines - draw them
+		sblines.enter()
+			.append("path")
+			.attr("class", "line sbday")
+			.attr("d", function(d) { return line(d.values); })
+			.style("stroke", "brown");
+		//take care of outgoing sb lines - delete them
+		sblines.exit()
+			.transition()
+			.duration(1000)
+			.style("opacity", "0")
+			.remove();
+		//take care of sb lines being updated - recalc data (this grouping should be empty...)
+		sblines.transition()
+			.duration(1000)
+			.attr("d", function(d) { return line(d.values); })
+			.style("stroke", "brown");
 	}
 	
-	// 
-	data = d3.nest()
-	.key(function(d) {return d.Direction;})
-	.key(function(d) {return d.Time;})
-	.sortKeys(d3.ascending)
-	.rollup(function(d) {
-		return d3.mean(d, function(g) {return +g.CyclistCount;});
-	})
-	.map(csv_filtered);
-	numdays = Math.ceil(csv_filtered.length/numEntriesPerDay);
-}
+	function temp_brushed()
+	{
+		temp_selection = temp_brush.empty() ? temp_scale.domain() : temp_brush.extent();
+		change();
+	}
+	function precip_brushed()
+	{
+		precip_selection = precip_brush.empty() ? precip_scale.domain() : precip_brush.extent();
+		change();
+	}
+	function time_brushed()
+	{
+		time_selection = time_brush.empty() ? time_scale.domain() : time_brush.extent();
+		time_selection[0] = time_selection[0] % 365;
+		time_selection[1] = time_selection[1] % 365;
+		change();
+	}
+});
 </script>
+</body>
