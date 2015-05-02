@@ -331,6 +331,14 @@ d3.csv("fremont.csv", function(thedata) //load data
 	d3.selectAll("input")
 		.on("change", day_changed);
 	
+	//Create weather data lookup table
+	var weather_lookup = d3.nest()
+		.key(function(d) { return d.Date; })
+		.rollup(function(d)
+		{
+			return {"temp":d[0].Max_TemperatureF, "precip":d[0].PrecipitationIn};
+		});
+	
 	function change()
 	{
 		//Update data
