@@ -102,8 +102,6 @@ function build_bar(selector, axis, brush)
 	return svg;
 }
 
-// define time entries' format
-var parseTime = d3.time.format("%I:%M:%S %p").parse;
 // global variable for dataset
 var thedata;
 
@@ -114,9 +112,8 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     height = 500 - margin.top - margin.bottom;
 	
 var parseDate = d3.time.format("%d-%b-%y").parse;
-var parseTime = d3.time.format("%I:%M:%S %p").parse;
 
-var xScale = d3.time.scale()
+var xScale = d3.scale.linear()
     .range([0, width]);
 
 var yScale = d3.scale.linear()
@@ -124,8 +121,7 @@ var yScale = d3.scale.linear()
 	
 var xAxis = d3.svg.axis()
     .scale(xScale)
-    .orient("bottom")
-	.tickFormat(d3.time.format("%I %p"));
+    .orient("bottom");
 
 var yAxis = d3.svg.axis()
     .scale(yScale)
@@ -133,11 +129,11 @@ var yAxis = d3.svg.axis()
 	
 var line = d3.svg.line()
 	.interpolate("linear")
-    .x(function(d) { return xScale(parseTime(d.key)); })
+    .x(function(d) { return xScale(d.key); })
     .y(function(d) { return yScale(d.values); });
 	
 var avgline = d3.svg.line()
-	.x(function(d) { return xScale(parseTime(d.key)); })
+	.x(function(d) { return xScale(d.key); })
 	.y(function(d) { return yScale(+d.values); });
 	
 var svg = d3.select("body").append("svg")
@@ -145,10 +141,6 @@ var svg = d3.select("body").append("svg")
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	
-function sortTime(a, b) {
-	return parseTime(a) - parseTime(b);
-}
 
 d3.csv("fremont.csv", function(thedata) //load data
 {
@@ -191,7 +183,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.on("brush", time_brushed);
 	var time_axis = d3.svg.axis()
 		.scale(time_scale)
-		.orient("bottum")
+		.orient("bottom")
 		.tickValues([0, 120, 243, 365, 485, 608, 729])
 		.tickFormat(function(d, i)
 		{
@@ -203,7 +195,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 	// (initial aggregation for the checked "all")
 	var NBavgdata = d3.nest() //average over all days aggregation
 		.key(function(d) {return d.Time;})
-		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
@@ -212,7 +203,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 	
 	var SBavgdata = d3.nest() //average over all days aggregation
 		.key(function(d) {return d.Time;})
-		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
@@ -223,7 +213,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
@@ -234,7 +223,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
@@ -242,7 +230,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.entries(thedata.filter(function(d) { return d.Direction === " NB";} ));
 	
 	// define x-domain
-	xScale.domain(d3.extent(thedata, function(d) { return parseTime(d.Time); }));
+	xScale.domain([0,23]);
 	
 	// define y-domain
 	yScale.domain([
@@ -343,7 +331,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//new averaged data for NB traffic
 		var NBavgdata = d3.nest() //average over all days aggregation
 			.key(function(d) {return d.Time;})
-			.sortKeys(sortTime)
 			.rollup(function(d)
 			{
 				return d3.mean(d, function(g) {return +g.CyclistCount;});
@@ -352,7 +339,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//new averaged data for SB traffic
 		var SBavgdata = d3.nest() //average over all days aggregation
 			.key(function(d) {return d.Time;})
-			.sortKeys(sortTime)
 			.rollup(function(d)
 			{
 				return d3.mean(d, function(g) {return +g.CyclistCount;});
@@ -363,7 +349,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
@@ -374,7 +359,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
-		.sortKeys(sortTime)
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
