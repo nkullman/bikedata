@@ -17,10 +17,6 @@ text {
 svg {
   font: 10px sans-serif;
 }
-.area {
-  fill: steelblue;
-  clip-path: url(#clip);
-}
 .axis path,
 .axis line {
   fill: none;
@@ -109,7 +105,7 @@ d3.csv("fremont.csv", function(csv) //load data
 	var temp_axis = d3.svg.axis()
 		.scale(temp_scale)
 		.orient("bottom")
-		.ticks(5);
+		.tickValues([30, 43, 56, 69, 82, 95]);
 	build_bar("#temp", temp_axis, temp_brush);
 	
 	var precip_brush = d3.svg.brush()
