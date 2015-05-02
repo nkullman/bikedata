@@ -50,6 +50,14 @@ svg {
 	stroke: #000;
 }
 
+#sidebar {
+	float: left;
+}
+
+#vis {
+	float: right;
+}
+
 </style>
 <div id="sidebar">
 <table>
@@ -142,6 +150,7 @@ var avgline = d3.svg.line()
 	.y(function(d) { return yScale(+d.values); });
 	
 var svg = d3.select("body").append("svg")
+	.attr("id", "vis")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
