@@ -64,6 +64,11 @@ svg {
 <div id="sidebar">
 <table>
 	<tr>
+		<th colspan="2">
+			Fremont Bridge Bicycle Counts
+		</th>
+	</tr>
+	<tr>
 		<td colspan="2">
 			<form>
   				<label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
@@ -71,6 +76,10 @@ svg {
 				<label><input type="radio" name="dataset" value="weekends">Weekends</label>
 			</form>
 		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>(brush to select)</td>
 	</tr>
 	<tr>
 		<td>Max Temperature:</td>
@@ -83,6 +92,9 @@ svg {
 	<tr>
 		<td>Day of Year:</td>
 		<td id="time"></td>
+	</tr>
+	<tr>
+		<td colspan="2" id="numdays">910 Days Selected</td>
 	</tr>
 </table>
 </div>
@@ -305,9 +317,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.attr("class", "line sbavg")
 		.attr("d", function(d) { return avgline(d); });
 	
-		
-	var numdays = Math.ceil(thedata.length/48);
-	
 	d3.selectAll("input")
 		.on("change", day_changed);
 	
@@ -383,7 +392,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 		})
 		.entries(csv_filtered.filter(function(d) { return d.Direction === " NB";} ));
 		
-		
 		/* Update NB lines */
 		var nblines = viz_alldays.selectAll(".nbday")
 			.data(nbcycledata, function (d) {return d.key;});
@@ -435,6 +443,9 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.transition()
 			.duration(1000)
 			.attr("d", function(d) { return avgline(d); });
+		
+		
+		d3.select("#numdays").text(nbcycledata.length + " days selected")
 	}
 	
 	function day_changed()
