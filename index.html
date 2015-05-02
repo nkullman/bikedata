@@ -285,14 +285,9 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.append("path")
 			.attr("class", "line nbday")
 			.attr("d", function(d) { return line(d.values); })
-			.append("title")
-			.text(function(d) {
-				return "Date: " + d.key;
-			})
 			.on("mouseover", function() {
-				console.log("got one")
 				d3.select(this)
-					.attr("stroke-width", "2px")
+					.attr("stroke-width", "4px")
 					.style("opacity", "1.0");
 			})
 			.on("mouseout", function() {
@@ -300,6 +295,10 @@ d3.csv("fremont.csv", function(thedata) //load data
 					.transition().duration(300)
 					.attr("stroke-width", "0.5px")	
 					.style("opacity", "0.1");
+			})
+			.append("title")
+			.text(function(d) {
+				return "Date: " + d.key;
 			});
 	
 	// draw all SB day lines
@@ -309,6 +308,17 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.append("path")
 			.attr("class", "line sbday")
 			.attr("d", function(d) { return line(d.values); })
+			.on("mouseover", function() {
+				d3.select(this)
+					.attr("stroke-width", "4px")
+					.style("opacity", "1.0");
+			})
+			.on("mouseout", function() {
+				d3.select(this)
+					.transition().duration(300)
+					.attr("stroke-width", "0.5px")	
+					.style("opacity", "0.1");
+			})
 			.append("title")
 			.text(function(d) {
 				return "Date: " + d.key;
