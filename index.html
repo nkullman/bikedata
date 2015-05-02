@@ -121,7 +121,12 @@ var yScale = d3.scale.linear()
 	
 var xAxis = d3.svg.axis()
     .scale(xScale)
-    .orient("bottom");
+    .orient("bottom")
+	.tickValues([0, 3, 6, 9, 12, 15, 18, 21])
+	.tickFormat(function(d,i)
+	{
+		return ["12am", "3am", "6am", "9am", "12pm", "3pm", "6pm", "9pm"][i];
+	});
 
 var yAxis = d3.svg.axis()
     .scale(yScale)
