@@ -84,7 +84,7 @@ d3.csv("fremont.csv", function(csv) //load data
 		.range([0,barwidth]);
 	
 	var precip_scale = d3.scale.sqrt()
-		.domain(precip_selection)
+		.domain([0,2.5])
 		.range([0,barwidth]);
 	
 	var time_scale = d3.scale.linear()
@@ -115,7 +115,11 @@ d3.csv("fremont.csv", function(csv) //load data
 	var time_axis = d3.svg.axis()
 		.scale(time_scale)
 		.orient("bottum")
-		.ticks(5);
+		.tickValues([0, 120, 243, 365, 485, 608, 729])
+		.tickFormat(function(d, i)
+		{
+			return ["Jan", "May", "Sept"][i % 3];
+		});
 	build_bar("#time", time_axis, time_brush);
 
 	var data = d3.nest() //initial aggregation
