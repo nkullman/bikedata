@@ -390,6 +390,7 @@ d3.csv("fremont.csv", function(csv) //load data
 			
 		/* Update NB lines */
 		var nblines = svg.selectAll(".nbday")
+			//.data(daysNB, function(d) {return d.key;} );
 			.data(daysNB);
 		//take care of incoming nb lines - draw them
 		nblines.enter()
@@ -411,6 +412,7 @@ d3.csv("fremont.csv", function(csv) //load data
 			
 		/* Update SB lines */
 		var sblines = svg.selectAll(".sbday")
+			//.data(daysSB, function(d) {return d.key;} );
 			.data(daysSB);
 		//take care of incoming sb lines - draw them
 		sblines.enter()
