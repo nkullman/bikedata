@@ -151,12 +151,16 @@ var avgline = d3.svg.line()
 	.x(function(d) { return xScale(d.key); })
 	.y(function(d) { return yScale(+d.values); });
 	
-var svg = d3.select("body").append("svg")
+var viz = d3.select("body").append("svg")
 	.attr("id", "vis")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var viz_alldays = viz.append("g");
+var viz_agg = viz.append("g");
+var viz_axes = viz.append("g");
 
 d3.csv("fremont.csv", function(thedata) //load data
 {
@@ -252,18 +256,18 @@ d3.csv("fremont.csv", function(thedata) //load data
 	// define y-domain
 	yScale.domain([
 		d3.min(nbcycledata, function(c) { return d3.min(c.values, function(v) { return v.values; }); }),
-		1000
+		700
 		//d3.max(daysNB, function(c) { return d3.max(c.values, function(v) { return v.count; }); })
 	]);
 	
 	// draw x-axis:
-	svg.append("g")
+	viz_axes.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 	  
 	//draw y-axis:
-	svg.append("g")
+	viz_axes.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
@@ -274,7 +278,7 @@ d3.csv("fremont.csv", function(thedata) //load data
       .text("Cyclists");
 	
 	// draw all NB day lines
-	var nbday = svg.selectAll(".nbday")
+	var nbday = viz_alldays.selectAll(".nbday")
 		.data(nbcycledata)
 		.enter()
 		.append("path")
@@ -282,7 +286,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); });
 	
 	// draw all SB day lines
-	var sbday = svg.selectAll(".sbday")
+	var sbday = viz_alldays.selectAll(".sbday")
 		.data(sbcycledata)
 		.enter()
 		.append("path")
@@ -290,13 +294,13 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); });
 	 
 	 // draw line for NB average
-	 svg.append("path")
+	 viz_agg.append("path")
 		.datum(NBavgdata)
 		.attr("class", "line nbavg")
 		.attr("d", function(d) { return avgline(d); });
 	 
 	 // draw line for SB average
-	 svg.append("path")
+	 viz_agg.append("path")
 		.datum(SBavgdata)
 		.attr("class", "line sbavg")
 		.attr("d", function(d) { return avgline(d); });
@@ -381,7 +385,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		
 		
 		/* Update NB lines */
-		var nblines = svg.selectAll(".nbday")
+		var nblines = viz_alldays.selectAll(".nbday")
 			.data(nbcycledata, function (d) {return d.key;});
 		//take care of incoming nb lines - draw them
 		nblines.enter()
@@ -400,7 +404,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); });
 			
 		/* Update SB lines */
-		var sblines = svg.selectAll(".sbday")
+		var sblines = viz_alldays.selectAll(".sbday")
 			.data(sbcycledata, function (d) {return d.key;});
 		//take care of incoming sb lines - draw them
 		sblines.enter()
