@@ -13,12 +13,6 @@ text {
   font: 10px sans-serif;
 }
 
-form {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
-
 svg {
   font: 10px sans-serif;
 }
@@ -39,14 +33,29 @@ svg {
 }
 
 </style>
-<form>
-  <label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
-  <label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
-  <label><input type="radio" name="dataset" value="weekends">Weekends</label>
-</form>
-<p id="temp">Max Temperature:</p>
-<p id="precip">Precipitation:</p>
-<p id="time">Day of Year:</p>
+<table>
+	<tr>
+		<td colspan="2">
+			<form>
+  				<label><input type="radio" name="dataset" value="alldays" checked>All Days</label>
+				<label><input type="radio" name="dataset" value="weekdays">Weekdays</label>
+				<label><input type="radio" name="dataset" value="weekends">Weekends</label>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td>Max Temperature:</td>
+		<td id="temp"></td>
+	</tr>
+	<tr>
+		<td>Precipitation:</td>
+		<td id="precip"></td>
+	</tr>
+	<tr>
+		<td>Day of Year:</td>
+		<td id="time"></td>
+	</tr>
+</table>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 	
