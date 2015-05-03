@@ -3,7 +3,8 @@
 <style>
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin: auto;
+  margin: 0;
+  padding: 0;
   position: relative;
 }
 
@@ -57,12 +58,29 @@ svg {
 	stroke: sandybrown;
 }
 
-#sidebar {
-	float: left;
+#header {
+	position: fixed;
+	top: 20px;
+	height: 50px;
+	width: 100%;
+	font-weight: bold;
+	text-align: center;
 }
 
-#vis {
-	float: right;
+#sidebar {
+	position:fixed;
+	top: 20px;
+	left: 20px;
+	bottom: 0px;
+	width: 380px;
+}
+
+#parent {
+	margin-top: 50px;
+	margin-left: 400px;
+	margin-right: 20px;
+	margin-bottom: 20px;
+	width: auto;
 }
 
 #tooltip {
@@ -92,13 +110,10 @@ svg {
 }
 
 </style>
+<div id="header">Fremont Bridge Bicycle Counts</div>
+<div id="parent">
 <div id="sidebar">
 <table>
-	<tr>
-		<th colspan="2">
-			Fremont Bridge Bicycle Counts
-		</th>
-	</tr>
 	<tr>
 		<td colspan="2">
 			<form>
@@ -117,7 +132,7 @@ svg {
 		<td id="precip"></td>
 	</tr>
 	<tr>
-		<td>Day of Year:</td>
+		<td>Timeframe:</td>
 		<td id="time"></td>
 	</tr>
 	<tr>
@@ -126,10 +141,12 @@ svg {
 	</tr>
 </table>
 </div>
+<div id="vis"></div>
 <div id="tooltip" class="hidden">
         <p><strong>Date:</strong> <span id="date">1989-03-21</span> <span id="daytype">(weekend)</span></p>
         <p><strong>Max temp.:</strong> <span id="maxtemp">1000</span> ºF</p>
 		<p><strong>Precip.:</strong> <span id="precip">100</span> in.</p>
+</div>
 </div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
@@ -157,14 +174,9 @@ function build_bar(selector, axis, brush)
 	return svg;
 }
 
-// global variable for dataset
-var thedata;
-
-var numEntriesPerDay = 48;
-
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = document.getElementById("vis").clientWidth - margin.left - margin.right,
+    height = document.getElementById("sidebar").clientHeight - 80 - margin.top - margin.bottom;
 	
 var parseDate = d3.time.format("%d-%b-%y").parse;
 
@@ -196,8 +208,7 @@ var avgline = d3.svg.line()
 	.x(function(d) { return xScale(d.key); })
 	.y(function(d) { return yScale(+d.values); });
 	
-var viz = d3.select("body").append("svg")
-	.attr("id", "vis")
+var viz = d3.select("#vis").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
