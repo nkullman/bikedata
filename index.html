@@ -143,7 +143,7 @@ svg {
 </div>
 <div id="vis"></div>
 <div id="tooltip" class="hidden">
-        <p><strong>Date:</strong> <span id="date">1989-03-21</span> <span id="daytype">(weekend)</span></p>
+        <p><strong>Date:</strong> <span id="date">1989-03-21</span></p>
         <p><strong>Max temp.:</strong> <span id="maxtemp">1000</span> ºF</p>
 		<p><strong>Precip.:</strong> <span id="precip">100</span> in.</p>
 </div>
@@ -325,8 +325,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("class", "line nbday")
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
-				// update tooltip info
-				// use argument d with the weather lookup...
+					updateTooltip(d);
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
@@ -353,7 +352,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
 				// update tooltip info
-				// use argument d with the weather lookup...
+				updateTooltip(d);
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
@@ -413,9 +412,18 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.key(function(d) { return d.Date; })
 		.rollup(function(d)
 		{
-			return {"temp":d[0].Max_TemperatureF, "precip":d[0].PrecipitationIn};
+			return {
+				"temp":d[0].Max_TemperatureF,
+				"precip":d[0].PrecipitationIn,
+				"daytype":d[0].IsWeekday};
 		})
 		.map(thedata);
+		
+	function updateTooltip(d) {
+		d3.select("#tooltip").select("#date").text(d.key);
+		d3.select("#tooltip").select("#maxtemp").text(weather_lookup[d.key].temp);
+		d3.select("#tooltip").select("#precip").text(weather_lookup[d.key].precip);
+	};
 	
 	function change()
 	{
@@ -499,7 +507,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
 				// update tooltip info
-				// use argument d with the weather lookup...
+				updateTooltip(d);
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
@@ -537,7 +545,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
 				// update tooltip info
-				// use argument d with the weather lookup...
+				updateTooltip(d);
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
