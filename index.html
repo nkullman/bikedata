@@ -16,9 +16,15 @@ svg {
   font: 10px sans-serif;
 }
 
+form {
+	text-align: center;
+	margin-bottom: 25px;
+}
+
 .caption {
 	font-size: 10px;
 	text-align: center;
+	padding-bottom: 25px;
 }
 
 .axis path,
@@ -41,7 +47,7 @@ svg {
 
 .sbday{
 	opacity: 0.1;
-	stroke: brown;
+	stroke: sandybrown;
 }
 
 .nbday{
@@ -51,11 +57,11 @@ svg {
 
 .nbavg {
 	stroke-width: 5px;
-	stroke: #91d8f5;
+	stroke: navy;
 }
 .sbavg{
 	stroke-width: 5px;
-	stroke: #feae6a;
+	stroke: brown;
 }
 
 #header {
@@ -65,6 +71,7 @@ svg {
 	width: 100%;
 	font-weight: bold;
 	text-align: center;
+	font-size: 18px;
 }
 
 #sidebar {
@@ -109,6 +116,16 @@ svg {
         line-height: 14px;
 }
 
+#numdaysbar {
+	padding: 10px 0;
+	background-color: lightgrey;
+	text-align: center;
+}
+
+#legend {
+	margin: 25px 0;
+}
+
 </style>
 <div id="header">Fremont Bridge Bicycle Counts</div>
 <div id="parent">
@@ -136,9 +153,14 @@ svg {
 		<td id="time"></td>
 	</tr>
 	<tr>
-		<td id="numdays">910 Days Selected</td>
-		<td class="caption">(brush to select)</td>
+		<td></td>
+		<td class="caption"><em>(brush to select)</em></td>
 	</tr>
+	<tr>
+		<td colspan = "2" id="numdaysbar"><strong id="numdays">910</strong> Days Selected</td>
+	</tr>
+</table>
+<table id="legend">
 	<tr>
 		<td><svg height="20", width="30"><line x1="0", y1="10", x2="30", y2="10" class="nbday" style="stroke-width: 3px; opacity: 1;"></svg> Northbound</td>
 		<td><svg height="20", width="30"><line x1="0", y1="10", x2="30", y2="10" class="nbavg"></svg> Northbound Average</td>
@@ -156,7 +178,7 @@ svg {
 		<p><strong>Precip.:</strong> <span id="precip">100</span> in.</p>
 </div>
 </div>
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/d3.v3.js"></script>
 <script>
 	
 var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
@@ -523,7 +545,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return avgline(d); });
 		
 		
-		d3.select("#numdays").text(nbcycledata.length + " days selected");
+		d3.select("#numdays").text(nbcycledata.length);
 	}
 	
 	function day_changed()
