@@ -228,7 +228,6 @@ var yAxis = d3.svg.axis()
     .orient("left");
 	
 var line = d3.svg.line()
-	.interpolate("linear")
     .x(function(d) { return xScale(d.key); })
     .y(function(d) { return yScale(d.values); });
 	
@@ -245,6 +244,8 @@ var viz = d3.select("#vis").append("svg")
 var viz_alldays = viz.append("g");
 var viz_agg = viz.append("g");
 var viz_axes = viz.append("g");
+
+var numdays = d3.select("#numdays");
 
 d3.csv("fremont.csv", function(thedata) //load data
 {
@@ -371,14 +372,14 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.on("mouseout", moused_out);
 	 
 	 // draw line for NB average
-	 viz_agg.append("path")
+	 var nbavgline = viz_agg.append("path")
 		.datum(NBavgdata)
 		.attr("class", "line nbavg")
 		.attr("id", "nbavg")
 		.attr("d", function(d) { return avgline(d); });
 	 
 	 // draw line for SB average
-	 viz_agg.append("path")
+	 var sbavgline = viz_agg.append("path")
 		.datum(SBavgdata)
 		.attr("class", "line sbavg")
 		.attr("id", "sbavg")
@@ -537,20 +538,18 @@ d3.csv("fremont.csv", function(thedata) //load data
 			
 		/* Update average lines */
 		// update NB average
-		d3.select("#nbavg")
-			.datum(NBavgdata)
+		nbavgline.datum(NBavgdata)
 			.transition()
 			.duration(1000)
 			.attr("d", function(d) { return avgline(d); });
 		//update SB average
-		d3.select("#sbavg")
-			.datum(SBavgdata)
+		sbavgline.datum(SBavgdata)
 			.transition()
 			.duration(1000)
 			.attr("d", function(d) { return avgline(d); });
 		
 		
-		d3.select("#numdays").text(nbcycledata.length);
+		numdays.text(nbcycledata.length);
 	}
 	
 	function day_changed()
