@@ -415,17 +415,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 				"daytype":d[0].IsWeekday};
 		})
 		.map(thedata);
-		
-	function updateTooltip(d, cursorpos) {
-		//update position
-		d3.select("#tooltip")
-			.style("left", (cursorpos[0]+5) + "px")
-			.style("top", (cursorpos[1]+5) + "px"); 
-		//update values
-		d3.select("#tooltip").select("#date").text(d.key);
-		d3.select("#tooltip").select("#maxtemp").text(weather_lookup[d.key].temp);
-		d3.select("#tooltip").select("#precip").text(weather_lookup[d.key].precip);
-	};
 	
 	function change()
 	{
