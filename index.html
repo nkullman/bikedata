@@ -346,25 +346,8 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.append("path")
 			.attr("class", "line nbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function(d) {
-				// update tooltip info
-				// use argument d with the weather lookup...
-				// trigger tooltip display
-				d3.select("#tooltip").classed("hidden", false);
-				// change line thickness and opacity
-				d3.select(this)
-					.style("stroke-width", "4px")
-					.style("opacity", "1.0");
-			})
-			.on("mouseout", function() {
-				// hide tooltip
-				d3.select("#tooltip").classed("hidden", true);
-				// transition line highlight back to normal
-				d3.select(this)
-					.transition().duration(250)
-					.style("stroke-width", "0.5px")	
-					.style("opacity", "0.1");
-			});
+			.on("mouseover", moused_over)
+			.on("mouseout", moused_out);
 	
 	// draw all SB day lines
 	var sbday = viz_alldays.selectAll(".sbday")
@@ -373,25 +356,8 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.append("path")
 			.attr("class", "line sbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function(d) {
-				// update tooltip info
-				// use argument d with the weather lookup...
-				// trigger tooltip display
-				d3.select("#tooltip").classed("hidden", false);
-				// change line thickness and opacity
-				d3.select(this)
-					.style("stroke-width", "4px")
-					.style("opacity", "1.0");
-			})
-			.on("mouseout", function() {
-				// hide tooltip
-				d3.select("#tooltip").classed("hidden", true);
-				// transition line highlight back to normal
-				d3.select(this)
-					.transition().duration(250)
-					.style("stroke-width", "0.5px")	
-					.style("opacity", "0.1");
-			});
+			.on("mouseover", moused_over)
+			.on("mouseout", moused_out);
 	 
 	 // draw line for NB average
 	 viz_agg.append("path")
@@ -497,25 +463,8 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.append("path")
 			.attr("class", "line nbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function(d) {
-				// update tooltip info
-				// use argument d with the weather lookup...
-				// trigger tooltip display
-				d3.select("#tooltip").classed("hidden", false);
-				// change line thickness and opacity
-				d3.select(this)
-					.style("stroke-width", "4px")
-					.style("opacity", "1.0");
-			})
-			.on("mouseout", function() {
-				// hide tooltip
-				d3.select("#tooltip").classed("hidden", true);
-				// transition line highlight back to normal
-				d3.select(this)
-					.transition().duration(250)
-					.style("stroke-width", "0.5px")	
-					.style("opacity", "0.1");
-			});
+			.on("mouseover", moused_over)
+			.on("mouseout", moused_out);
 		//take care of outgoing nb lines - delete them
 		nblines.exit()
 			.transition()
@@ -535,25 +484,8 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.append("path")
 			.attr("class", "line sbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function(d) {
-				// update tooltip info
-				// use argument d with the weather lookup...
-				// trigger tooltip display
-				d3.select("#tooltip").classed("hidden", false);
-				// change line thickness and opacity
-				d3.select(this)
-					.style("stroke-width", "4px")
-					.style("opacity", "1.0");
-			})
-			.on("mouseout", function() {
-				// hide tooltip
-				d3.select("#tooltip").classed("hidden", true);
-				// transition line highlight back to normal
-				d3.select(this)
-					.transition().duration(250)
-					.style("stroke-width", "0.5px")	
-					.style("opacity", "0.1");
-			});
+			.on("mouseover", moused_over)
+			.on("mouseout", moused_out);
 		//take care of outgoing sb lines - delete them
 		sblines.exit()
 			.transition()
@@ -614,6 +546,27 @@ d3.csv("fremont.csv", function(thedata) //load data
 		time_selection[1] = time_selection[1] % 365;
 		change();
 	}
+	
+	function moused_over(d)
+	{
+			// update tooltip info
+			// use argument d with the weather lookup...
+			// trigger tooltip display
+			d3.select("#tooltip").classed("hidden", false);
+			// change line thickness and opacity
+			d3.select(this)
+				.style("stroke-width", "4px")
+				.style("opacity", "1.0");
+	}
+	function moused_out() {
+				// hide tooltip
+				d3.select("#tooltip").classed("hidden", true);
+				// transition line highlight back to normal
+				d3.select(this)
+					.transition().duration(250)
+					.style("stroke-width", "0.5px")	
+					.style("opacity", "0.1");
+			}
 });
 </script>
 </body>
