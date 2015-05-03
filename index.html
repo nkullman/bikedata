@@ -415,7 +415,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 		{
 			return {"temp":d[0].Max_TemperatureF, "precip":d[0].PrecipitationIn};
 		})
-		.entries(thedata);
+		.map(thedata);
 	
 	function change()
 	{
