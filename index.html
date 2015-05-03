@@ -66,7 +66,7 @@ svg {
 }
 
 #tooltip {
-        position: fixed;
+        position: absolute;
         width: 200px;
         height: auto;
         padding: 10px;
@@ -335,8 +335,9 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.append("path")
 			.attr("class", "line nbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function() {
+			.on("mouseover", function(d) {
 				// update tooltip info
+				// use argument d with the weather lookup...
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
@@ -352,10 +353,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 					.transition().duration(250)
 					.style("stroke-width", "0.5px")	
 					.style("opacity", "0.1");
-			})
-			.append("title")
-			.text(function(d) {
-				return "Date: " + d.key;
 			});
 	
 	// draw all SB day lines
@@ -365,20 +362,24 @@ d3.csv("fremont.csv", function(thedata) //load data
 		.append("path")
 			.attr("class", "line sbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function() {
+			.on("mouseover", function(d) {
+				// update tooltip info
+				// use argument d with the weather lookup...
+				// trigger tooltip display
+				d3.select("#tooltip").classed("hidden", false);
+				// change line thickness and opacity
 				d3.select(this)
 					.style("stroke-width", "4px")
 					.style("opacity", "1.0");
 			})
 			.on("mouseout", function() {
+				// hide tooltip
+				d3.select("#tooltip").classed("hidden", true);
+				// transition line highlight back to normal
 				d3.select(this)
-					.transition().duration(300)
+					.transition().duration(250)
 					.style("stroke-width", "0.5px")	
 					.style("opacity", "0.1");
-			})
-			.append("title")
-			.text(function(d) {
-				return "Date: " + d.key;
 			});
 	 
 	 // draw line for NB average
@@ -485,20 +486,24 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.append("path")
 			.attr("class", "line nbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function() {
+			.on("mouseover", function(d) {
+				// update tooltip info
+				// use argument d with the weather lookup...
+				// trigger tooltip display
+				d3.select("#tooltip").classed("hidden", false);
+				// change line thickness and opacity
 				d3.select(this)
 					.style("stroke-width", "4px")
 					.style("opacity", "1.0");
 			})
 			.on("mouseout", function() {
+				// hide tooltip
+				d3.select("#tooltip").classed("hidden", true);
+				// transition line highlight back to normal
 				d3.select(this)
-					.transition().duration(300)
+					.transition().duration(250)
 					.style("stroke-width", "0.5px")	
 					.style("opacity", "0.1");
-			})
-			.append("title")
-			.text(function(d) {
-				return "Date: " + d.key;
 			});
 		//take care of outgoing nb lines - delete them
 		nblines.exit()
@@ -519,20 +524,24 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.append("path")
 			.attr("class", "line sbday")
 			.attr("d", function(d) { return line(d.values); })
-			.on("mouseover", function() {
+			.on("mouseover", function(d) {
+				// update tooltip info
+				// use argument d with the weather lookup...
+				// trigger tooltip display
+				d3.select("#tooltip").classed("hidden", false);
+				// change line thickness and opacity
 				d3.select(this)
 					.style("stroke-width", "4px")
 					.style("opacity", "1.0");
 			})
 			.on("mouseout", function() {
+				// hide tooltip
+				d3.select("#tooltip").classed("hidden", true);
+				// transition line highlight back to normal
 				d3.select(this)
-					.transition().duration(300)
+					.transition().duration(250)
 					.style("stroke-width", "0.5px")	
 					.style("opacity", "0.1");
-			})
-			.append("title")
-			.text(function(d) {
-				return "Date: " + d.key;
 			});
 		//take care of outgoing sb lines - delete them
 		sblines.exit()
