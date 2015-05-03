@@ -92,7 +92,7 @@ form {
 
 #tooltip {
         position: absolute;
-        width: 200px;
+        width: 150px;
         height: auto;
         padding: 10px;
         background-color: white;
@@ -207,8 +207,6 @@ function build_bar(selector, axis, brush)
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = document.getElementById("vis").clientWidth - margin.left - margin.right,
     height = document.getElementById("sidebar").clientHeight - 80 - margin.top - margin.bottom;
-	
-var parseDate = d3.time.format("%d-%b-%y").parse;
 
 var xScale = d3.scale.linear()
     .range([0, width]);
@@ -584,8 +582,12 @@ d3.csv("fremont.csv", function(thedata) //load data
 	{
 		// update tooltip position
 		d3.select("#tooltip")
-			.style("left", (d3.mouse(this)[0] + 5) + "px")
-			.style("top", (d3.mouse(this)[1] + 5) + "px");
+			.style("left",
+				(d3.mouse(this)[0] + parseInt(d3.select("#sidebar").style("width")) + parseInt(d3.select("#tooltip").style("width"))/2)
+				+ "px")
+			.style("top",
+				(d3.mouse(this)[1] + parseInt(d3.select("#header").style("height")))
+				+ "px");
 		// update tooltip info
 		d3.select("#tooltip").select("#date").text(d.key);
 		d3.select("#tooltip").select("#maxtemp").text(weather_lookup[d.key].temp);
