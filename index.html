@@ -51,11 +51,11 @@ svg {
 
 .nbavg {
 	stroke-width: 5px;
-	stroke: skyblue;
+	stroke: #91d8f5;
 }
 .sbavg{
 	stroke-width: 5px;
-	stroke: sandybrown;
+	stroke: #feae6a;
 }
 
 #header {
@@ -138,6 +138,14 @@ svg {
 	<tr>
 		<td id="numdays">910 Days Selected</td>
 		<td class="caption">(brush to select)</td>
+	</tr>
+	<tr>
+		<td><svg height="20", width="30"><line x1="0", y1="10", x2="30", y2="10" class="nbday" style="stroke-width: 3px; opacity: 1;"></svg> Northbound</td>
+		<td><svg height="20", width="30"><line x1="0", y1="10", x2="30", y2="10" class="nbavg"></svg> Northbound Average</td>
+	</tr>
+	<tr>
+		<td><svg height="20", width="30"><line x1="0", y1="10", x2="30", y2="10" class="sbday" style="stroke-width: 3px; opacity: 1;"></svg> Southbound</td>
+		<td><svg height="20", width="30"><line x1="0", y1="10", x2="30", y2="10" class="sbavg"></svg> Southbound Average</td>
 	</tr>
 </table>
 </div>
@@ -385,12 +393,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 				"daytype":d[0].IsWeekday};
 		})
 		.map(thedata);
-		
-	function updateTooltip(d) {
-		d3.select("#tooltip").select("#date").text(d.key);
-		d3.select("#tooltip").select("#maxtemp").text(weather_lookup[d.key].temp);
-		d3.select("#tooltip").select("#precip").text(weather_lookup[d.key].precip);
-	};
 	
 	function change()
 	{
@@ -559,7 +561,9 @@ d3.csv("fremont.csv", function(thedata) //load data
 	function moused_over(d)
 	{
 		// update tooltip info
-		updateTooltip(d);
+		d3.select("#tooltip").select("#date").text(d.key);
+		d3.select("#tooltip").select("#maxtemp").text(weather_lookup[d.key].temp);
+		d3.select("#tooltip").select("#precip").text(weather_lookup[d.key].precip);
 		// trigger tooltip display
 		d3.select("#tooltip").classed("hidden", false);
 		// change line thickness and opacity
