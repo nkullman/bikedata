@@ -306,28 +306,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//d3.max(daysNB, function(c) { return d3.max(c.values, function(v) { return v.count; }); })
 	]);
 	
-	// draw x-axis:
-	viz_axes.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-	  .append("text")
-	  .attr("y", "3em")
-	  .attr("x", (width + margin.right) / 2)
-	  .attr("text-anchor", "start")
-	  .text("Time");
-	  
-	//draw y-axis:
-	viz_axes.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Cyclists");
-	
 	// draw all NB day lines
 	var nbday = viz_alldays.selectAll(".nbday")
 		.data(nbcycledata)
@@ -396,6 +374,28 @@ d3.csv("fremont.csv", function(thedata) //load data
 	
 	d3.selectAll("input")
 		.on("change", day_changed);
+		
+	// draw x-axis:
+	viz_axes.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+	  .append("text")
+	  .attr("y", "3em")
+	  .attr("x", (width + margin.right) / 2)
+	  .attr("text-anchor", "start")
+	  .text("Time");
+	  
+	//draw y-axis:
+	viz_axes.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Cyclists");
 	
 	//Create weather data lookup table
 	var weather_lookup = d3.nest()
