@@ -371,12 +371,14 @@ d3.csv("fremont.csv", function(thedata) //load data
 	 viz_agg.append("path")
 		.datum(NBavgdata)
 		.attr("class", "line nbavg")
+		.attr("id", "nbavg")
 		.attr("d", function(d) { return avgline(d); });
 	 
 	 // draw line for SB average
 	 viz_agg.append("path")
 		.datum(SBavgdata)
 		.attr("class", "line sbavg")
+		.attr("id", "sbavg")
 		.attr("d", function(d) { return avgline(d); });
 	
 	d3.selectAll("input")
@@ -543,13 +545,13 @@ d3.csv("fremont.csv", function(thedata) //load data
 			
 		/* Update average lines */
 		// update NB average
-		d3.select(".nbavg")
+		d3.select("#nbavg")
 			.datum(NBavgdata)
 			.transition()
 			.duration(1000)
 			.attr("d", function(d) { return avgline(d); });
 		//update SB average
-		d3.select(".sbavg")
+		d3.select("#sbavg")
 			.datum(SBavgdata)
 			.transition()
 			.duration(1000)
