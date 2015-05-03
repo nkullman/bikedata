@@ -345,6 +345,11 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//d3.max(daysNB, function(c) { return d3.max(c.values, function(v) { return v.count; }); })
 	]);
 	
+	// store width of sidebar
+	var sidebarwidth = parseInt(d3.select("#sidebar").style("width"));
+	var tooltipwidth = parseInt(d3.select("#tooltip").style("width"));
+	var headerheight = parseInt(d3.select("#header").style("height"));
+	
 	// draw all NB day lines
 	var nbday = viz_alldays.selectAll(".nbday")
 		.data(nbcycledata)
@@ -582,20 +587,21 @@ d3.csv("fremont.csv", function(thedata) //load data
 	
 	function moused_over(d)
 	{
+		var tooltip= d3.select("#tooltip");
 		// update tooltip position
-		d3.select("#tooltip")
+		tooltip
 			.style("left",
-				(d3.mouse(this)[0] + parseInt(d3.select("#sidebar").style("width")) + parseInt(d3.select("#tooltip").style("width"))/2)
+				(d3.mouse(this)[0] + sidebarwidth + tooltipwidth/2)
 				+ "px")
 			.style("top",
-				(d3.mouse(this)[1] + parseInt(d3.select("#header").style("height")))
+				(d3.mouse(this)[1] + headerheight)
 				+ "px");
 		// update tooltip info
-		d3.select("#tooltip").select("#date").text(d.key);
-		d3.select("#tooltip").select("#maxtemp").text(weather_lookup[d.key].temp);
-		d3.select("#tooltip").select("#precip").text(weather_lookup[d.key].precip);
+		tooltip.select("#date").text(d.key);
+		tooltip.select("#maxtemp").text(weather_lookup[d.key].temp);
+		tooltip.select("#precip").text(weather_lookup[d.key].precip);
 		// trigger tooltip display
-		d3.select("#tooltip").classed("hidden", false);
+		tooltip.classed("hidden", false);
 		// change line thickness and opacity
 		d3.select(this)
 			.style("stroke-width", "4px")
