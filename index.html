@@ -325,7 +325,8 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("class", "line nbday")
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
-					updateTooltip(d);
+				//update tooltip location
+				updateTooltip(d, d3.mouse(this));
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
@@ -352,7 +353,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
 				// update tooltip info
-				updateTooltip(d);
+				updateTooltip(d, d3.mouse(this));
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
@@ -419,7 +420,12 @@ d3.csv("fremont.csv", function(thedata) //load data
 		})
 		.map(thedata);
 		
-	function updateTooltip(d) {
+	function updateTooltip(d, cursorpos) {
+		//update position
+		d3.select("#tooltip")
+			.style("left", (cursorpos[0]+5) + "px")
+			.style("top", (cursorpos[1]+5) + "px"); 
+		//update values
 		d3.select("#tooltip").select("#date").text(d.key);
 		d3.select("#tooltip").select("#maxtemp").text(weather_lookup[d.key].temp);
 		d3.select("#tooltip").select("#precip").text(weather_lookup[d.key].precip);
@@ -507,7 +513,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
 				// update tooltip info
-				updateTooltip(d);
+				updateTooltip(d, d3.mouse(this));
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
@@ -545,7 +551,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 			.attr("d", function(d) { return line(d.values); })
 			.on("mouseover", function(d) {
 				// update tooltip info
-				updateTooltip(d);
+				updateTooltip(d, d3.mouse(this));
 				// trigger tooltip display
 				d3.select("#tooltip").classed("hidden", false);
 				// change line thickness and opacity
