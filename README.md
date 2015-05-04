@@ -27,7 +27,7 @@ a3-nkullman-gclenagh
 - Bike data are hourly counts of cyclists crossing the east (northbound) and west (southbound) sides of the Fremont Bridge in Seattle, WA from October 2012 - April 2015.
 - Weather data are daily aggregates of a number of meteorological variables over the same time span.
 - Datasets were merged and cleaned. Tuples in the final dataset are of the following format:
-
+<!--- Table not displaying properly... --->
 |Index | Date | Time | Direction | CyclistCount | IsWeekday | Max_TemperatureF | PrecipitationIn | daynum |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 | 1 | 2012-10-02 | 0 | "NB" | 0 | TRUE | 63 | 0 | 275 |
@@ -55,12 +55,20 @@ Details about each non-aggregate line on the graph are available through hoverin
 
 ## Story Board
 
-Put either your storyboard content or a [link to your storyboard pdf file](storyboard.pdf?raw=true) here. Just like A2, you can use any software to create a *reasonable* pdf storyboard.
+We provide the viewer with a visualization of Seattleites' cycling tendencies.
+We allow the viewer to explore how cyclist turnout varies throughout the day and how turnout is affected by environmental factors. 
+Driving the interactivity controls on our visualization is the question "how do temperature and precipitation affect the amount of cycling activity?"  
+
+<!--- Put either your storyboard content or a [link to your storyboard pdf file](storyboard.pdf?raw=true) here.
+Just like A2, you can use any software to create a *reasonable* pdf storyboard. --->
 
 
 ### Changes between Storyboard and the Final Implementation
 
-A paragraph explaining changes between the storyboard and the final implementation.
+While the development process generated additional ideas which we have not pursued on account of time, 
+no functional differences exist between our storyboard and final implementation.
+
+<!--- A paragraph explaining changes between the storyboard and the final implementation. --->
 
 
 ## Development Process
