@@ -24,11 +24,12 @@ a3-nkullman-gclenagh
 - Two primary data sources for this assignment:
   1. Fremont Bridge bicycle count data from the City of Seattle[(https://data.seattle.gov/)](https://data.seattle.gov/)
   2. Weather data from [WeatherUnderground](http://www.wunderground.com/)
-- Bike data consisted of hourly counts of cyclists heading NB and SB on both sides of the Fremont Bridge in Seattle, WA.
-- Weather data were daily aggregates of a number of meteorological variables
-- Datasets were merged and went through iterations of paring and formatting
-- Example of a tuple in the final dataset:
-  - *example tuple here* 
+- Bike data are hourly counts of cyclists heading NB and SB on both sides of the Fremont Bridge in Seattle, WA from October 2012 - April 2015.
+- Weather data are daily aggregates of a number of meteorological variables over the same time span.
+- Datasets were merged, pared down, and modified. Tuples in the final dataset following format:
+|""|"Date"|"Time"|"Direction"|"CyclistCount"|"IsWeekday"|"Max_TemperatureF"|"PrecipitationIn"|"daynum"|
+|----|----|----|----|----|----|----|----|----|
+|1|2012-10-02|0|"NB"|0|TRUE|63|0|275|
  
 (Put a brief description of your final interactive visualization application and your dataset here.)
 
