@@ -65,9 +65,7 @@ Just like A2, you can use any software to create a *reasonable* pdf storyboard. 
 
 ### Changes between Storyboard and the Final Implementation
 
-Only slight differences exist between our storyboard and final implementation. One change is purely visual, with our legend and controls moving to the left of the display.
-
-The development process generated additional ideas which we have not pursued on account of time 
+Only slight differences exist between our storyboard and final implementation. One change is purely visual, with our legend and controls moving to the left of the display. Another change
 
 <!--- A paragraph explaining changes between the storyboard and the final implementation. --->
 
