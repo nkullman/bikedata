@@ -27,9 +27,9 @@ a3-nkullman-gclenagh
 - Bike data are hourly counts of cyclists crossing the east (northbound) and west (southbound) sides of the Fremont Bridge in Seattle, WA from October 2012 - April 2015.
 - Weather data are daily aggregates of a number of meteorological variables over the same time span.
 - Datasets were merged and cleaned. Tuples in the final dataset are of the following format:
-<!--- Table not displaying properly... --->
-|Index | Date | Time | Direction | CyclistCount | IsWeekday | Max_TemperatureF | PrecipitationIn | daynum |
-| -- | -- | -- | -- | -- | -- | -- | -- | -- |
+
+| Index | Date | Time | Direction | CyclistCount | IsWeekday | Max_TemperatureF | PrecipitationIn | daynum |
+| ----- | ---- | ---- | -------- | ----------- | ------- | --------------------- | ------------------- | ------ |
 | 1 | 2012-10-02 | 0 | "NB" | 0 | TRUE | 63 | 0 | 275 |
 
  
@@ -65,7 +65,8 @@ Just like A2, you can use any software to create a *reasonable* pdf storyboard. 
 
 ### Changes between Storyboard and the Final Implementation
 
-Only slight differences exist between our storyboard and final implementation. One change is purely visual, with our legend and controls moving to the left of the display. Another change
+While the development process generated additional ideas which we have not pursued on account of time, 
+no functional differences exist between our storyboard and final implementation.
 
 <!--- A paragraph explaining changes between the storyboard and the final implementation. --->
 
