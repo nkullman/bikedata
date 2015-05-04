@@ -8,7 +8,7 @@ a3-nkullman-gclenagh
 
 ## Bike Activity on the Fremont Bridge
 
-#Visualization
+### Visualization
 - Visualization shows records of cyclist counts across the Fremont Bridge.
 - Records from each calendar day are mapped to two lines on the visualization showing northbound and southbound counts at each hour.
 - Sliding brushes allow the viewer to select a subset of daily records according to specific values of the following:
