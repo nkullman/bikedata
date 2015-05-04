@@ -187,6 +187,8 @@ form {
 var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
 	barwidth = 200,
 	barheight = 20;
+	
+var transition_duration = 350;
 
 function build_bar(selector, axis, brush)
 {
@@ -472,12 +474,12 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//take care of outgoing nb lines - delete them
 		nblines.exit()
 			.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.style("opacity", "0")
 			.remove();
 		//take care of nb lines being updated - recalc data (this grouping should be empty...)
 		nblines.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.attr("d", function(d) { return line(d.values); });
 			
 		/* Update SB lines */
@@ -493,24 +495,24 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//take care of outgoing sb lines - delete them
 		sblines.exit()
 			.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.style("opacity", "0")
 			.remove();
 		//take care of sb lines being updated - recalc data (this grouping should be empty...)
 		sblines.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.attr("d", function(d) { return line(d.values); });
 			
 		/* Update average lines */
 		// update NB average
 		nbavgline.datum(avgdata[0].values)
 			.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.attr("d", function(d) { return line(d); });
 		//update SB average
 		sbavgline.datum(avgdata[1].values)
 			.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.attr("d", function(d) { return line(d); });
 		
 		
