@@ -187,6 +187,8 @@ form {
 var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
 	barwidth = 200,
 	barheight = 20;
+	
+var transition_duration = 350;
 
 function build_bar(selector, axis, brush)
 {
@@ -212,10 +214,12 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     height = document.getElementById("sidebar").clientHeight - 80 - margin.top - margin.bottom;
 
 var xScale = d3.scale.linear()
-    .range([0, width]);
+    .range([0, width])
+	.domain([0,23]);
 
 var yScale = d3.scale.linear()
-    .range([height, 0]);
+    .range([height, 0])
+	.domain([0,700]);
 	
 var xAxis = d3.svg.axis()
     .scale(xScale)
@@ -233,10 +237,6 @@ var yAxis = d3.svg.axis()
 var line = d3.svg.line()
     .x(function(d) { return xScale(d.key); })
     .y(function(d) { return yScale(d.values); });
-	
-var avgline = d3.svg.line()
-	.x(function(d) { return xScale(d.key); })
-	.y(function(d) { return yScale(+d.values); });
 	
 var viz = d3.select("#vis").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -303,55 +303,29 @@ d3.csv("fremont.csv", function(thedata) //load data
 
 	// dataset holding the average at each hour over all days
 	// (initial aggregation for the checked "all")
-	var NBavgdata = d3.nest() //average over all days aggregation
+	var avgdata = d3.nest() //average over all days aggregation
+		.key(function(d) {return d.Direction;})
 		.key(function(d) {return d.Time;})
 		.rollup(function(d)
 		{
 			return d3.mean(d, function(g) {return +g.CyclistCount;});
 		})
-		.entries(thedata.filter(function(d) { return d.Direction === " NB";} ));
-	
-	var SBavgdata = d3.nest() //average over all days aggregation
-		.key(function(d) {return d.Time;})
-		.rollup(function(d)
-		{
-			return d3.mean(d, function(g) {return +g.CyclistCount;});
-		})
-		.entries(thedata.filter(function(d) { return d.Direction === " SB";} ));
+		.entries(thedata);
 	
 	// each individual day's counts - southbound
-	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
+	var dailydata = d3.nest() //for each calendar day, get bike data by time
+		.key(function(d) {return d.Direction;})
 		.key(function(d) {return d.Date;})
 		.key(function(d) {return d.Time;})
 		.rollup(function(d)
 		{
-			return d3.mean(d, function(g) {return +g.CyclistCount;});
+			return d[0].CyclistCount;
 		})
-		.entries(thedata.filter(function(d) { return d.Direction === " SB";} ));
-		
-	// each individual day's counts - northbound
-	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
-		.key(function(d) {return d.Date;})
-		.key(function(d) {return d.Time;})
-		.rollup(function(d)
-		{
-			return d3.mean(d, function(g) {return +g.CyclistCount;});
-		})
-		.entries(thedata.filter(function(d) { return d.Direction === " NB";} ));
-	
-	// define x-domain
-	xScale.domain([0,23]);
-	
-	// define y-domain
-	yScale.domain([
-		d3.min(nbcycledata, function(c) { return d3.min(c.values, function(v) { return v.values; }); }),
-		700
-		//d3.max(daysNB, function(c) { return d3.max(c.values, function(v) { return v.count; }); })
-	]);
+		.entries(thedata);
 	
 	// draw all NB day lines
 	var nbday = viz_alldays.selectAll(".nbday")
-		.data(nbcycledata)
+		.data(dailydata[0].values)
 		.enter()
 		.append("path")
 			.attr("class", "line nbday")
@@ -361,7 +335,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 	
 	// draw all SB day lines
 	var sbday = viz_alldays.selectAll(".sbday")
-		.data(sbcycledata)
+		.data(dailydata[1].values)
 		.enter()
 		.append("path")
 			.attr("class", "line sbday")
@@ -371,17 +345,17 @@ d3.csv("fremont.csv", function(thedata) //load data
 	 
 	 // draw line for NB average
 	 var nbavgline = viz_agg.append("path")
-		.datum(NBavgdata)
+		.datum(avgdata[0].values)
 		.attr("class", "line nbavg")
 		.attr("id", "nbavg")
-		.attr("d", function(d) { return avgline(d); });
+		.attr("d", function(d) { return line(d); });
 	 
 	 // draw line for SB average
 	 var sbavgline = viz_agg.append("path")
-		.datum(SBavgdata)
+		.datum(avgdata[1].values)
 		.attr("class", "line sbavg")
 		.attr("id", "sbavg")
-		.attr("d", function(d) { return avgline(d); });
+		.attr("d", function(d) { return line(d); });
 	
 	d3.selectAll("input")
 		.on("change", day_changed);
@@ -461,45 +435,35 @@ d3.csv("fremont.csv", function(thedata) //load data
 			});
 		}
 		//new averaged data for NB traffic
-		var NBavgdata = d3.nest() //average over all days aggregation
+		avgdata = d3.nest() //average over all days aggregation
+			.key(function(d) {return d.Direction;})
 			.key(function(d) {return d.Time;})
 			.rollup(function(d)
 			{
 				return d3.mean(d, function(g) {return +g.CyclistCount;});
 			})
-			.entries(csv_filtered.filter(function(d) { return d.Direction === " NB";} ));
-		//new averaged data for SB traffic
-		var SBavgdata = d3.nest() //average over all days aggregation
-			.key(function(d) {return d.Time;})
-			.rollup(function(d)
-			{
-				return d3.mean(d, function(g) {return +g.CyclistCount;});
-			})
-			.entries(csv_filtered.filter(function(d) { return d.Direction === " SB";} ));
+			.entries(csv_filtered);
 		
+		if (avgdata.length == 0)
+		{
+			avgdata = [{"values":[]}, {"values":[]}];
+			dailydata = avgdata;
+		} else {
 		// each individual day's counts - southbound
-	var sbcycledata = d3.nest() //for each calendar day, get bike data by time
-		.key(function(d) {return d.Date;})
-		.key(function(d) {return d.Time;})
-		.rollup(function(d)
-		{
-			return d3.mean(d, function(g) {return +g.CyclistCount;});
-		})
-		.entries(csv_filtered.filter(function(d) { return d.Direction === " SB";} ));
-		
-	// each individual day's counts - northbound
-	var nbcycledata = d3.nest() //for each calendar day, get bike data by time
-		.key(function(d) {return d.Date;})
-		.key(function(d) {return d.Time;})
-		.rollup(function(d)
-		{
-			return d3.mean(d, function(g) {return +g.CyclistCount;});
-		})
-		.entries(csv_filtered.filter(function(d) { return d.Direction === " NB";} ));
-		
+		dailydata = d3.nest() //for each calendar day, get bike data by time
+			.key(function(d) {return d.Direction;})
+			.key(function(d) {return d.Date;})
+			.key(function(d) {return d.Time;})
+			.rollup(function(d)
+			{	
+				return d[0].CyclistCount;
+			})
+			.entries(csv_filtered);
+		}
+	
 		/* Update NB lines */
 		var nblines = viz_alldays.selectAll(".nbday")
-			.data(nbcycledata, function (d) {return d.key;});
+			.data(dailydata[0].values, function (d) {return d.key;});
 		//take care of incoming nb lines - draw them
 		nblines.enter()
 			.append("path")
@@ -510,17 +474,17 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//take care of outgoing nb lines - delete them
 		nblines.exit()
 			.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.style("opacity", "0")
 			.remove();
 		//take care of nb lines being updated - recalc data (this grouping should be empty...)
 		nblines.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.attr("d", function(d) { return line(d.values); });
 			
 		/* Update SB lines */
 		var sblines = viz_alldays.selectAll(".sbday")
-			.data(sbcycledata, function (d) {return d.key;});
+			.data(dailydata[1].values, function (d) {return d.key;});
 		//take care of incoming sb lines - draw them
 		sblines.enter()
 			.append("path")
@@ -531,28 +495,28 @@ d3.csv("fremont.csv", function(thedata) //load data
 		//take care of outgoing sb lines - delete them
 		sblines.exit()
 			.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.style("opacity", "0")
 			.remove();
 		//take care of sb lines being updated - recalc data (this grouping should be empty...)
 		sblines.transition()
-			.duration(1000)
+			.duration(transition_duration)
 			.attr("d", function(d) { return line(d.values); });
 			
 		/* Update average lines */
 		// update NB average
-		nbavgline.datum(NBavgdata)
+		nbavgline.datum(avgdata[0].values)
 			.transition()
-			.duration(1000)
-			.attr("d", function(d) { return avgline(d); });
+			.duration(transition_duration)
+			.attr("d", function(d) { return line(d); });
 		//update SB average
-		sbavgline.datum(SBavgdata)
+		sbavgline.datum(avgdata[1].values)
 			.transition()
-			.duration(1000)
-			.attr("d", function(d) { return avgline(d); });
+			.duration(transition_duration)
+			.attr("d", function(d) { return line(d); });
 		
 		
-		numdays.text(nbcycledata.length);
+		numdays.text(dailydata[0].values.length);
 	}
 	
 	function day_changed()
