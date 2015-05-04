@@ -61,6 +61,7 @@ Driving the interactivity controls on our visualization is the question "how do 
 
 <!--- Put either your storyboard content or a [link to your storyboard pdf file](storyboard.pdf?raw=true) here.
 Just like A2, you can use any software to create a *reasonable* pdf storyboard. --->
+![Storyboard](IMG_0001.jpg)
 
 
 ### Changes between Storyboard and the Final Implementation
