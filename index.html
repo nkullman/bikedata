@@ -178,7 +178,7 @@ form {
 		<p><strong>Precip.:</strong> <span id="precip">100</span> in.</p>
 </div>
 </div>
-<script src="http://d3js.org/d3.v3.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 	
 var barmargin = {top: 5, right: 10, bottom: 0, left: 10},
@@ -422,6 +422,11 @@ d3.csv("fremont.csv", function(thedata) //load data
 		})
 		.map(thedata);
 	
+	var tooltip = {"div":d3.select("#tooltip")};
+	tooltip.date = tooltip.div.select("#date");
+	tooltip.maxtemp = tooltip.div.select("#maxtemp");
+	tooltip.precip = tooltip.div.select("#precip");
+	
 	function change()
 	{
 		//Update data
@@ -588,19 +593,20 @@ d3.csv("fremont.csv", function(thedata) //load data
 	{
 		var tooltip= d3.select("#tooltip");
 		// update tooltip position
-		tooltip
+		var mouse = d3.mouse(this);
+		tooltip.div
 			.style("left",
-				(d3.mouse(this)[0] + sidebarwidth + tooltipwidth/2)
+				(mouse[0] + 455)
 				+ "px")
 			.style("top",
-				(d3.mouse(this)[1] + headerheight)
+				(mouse[1] + 50)
 				+ "px");
 		// update tooltip info
-		tooltip.select("#date").text(d.key);
-		tooltip.select("#maxtemp").text(weather_lookup[d.key].temp);
-		tooltip.select("#precip").text(weather_lookup[d.key].precip);
+		tooltip.date.text(d.key);
+		tooltip.maxtemp.text(weather_lookup[d.key].temp);
+		tooltip.precip.text(weather_lookup[d.key].precip);
 		// trigger tooltip display
-		tooltip.classed("hidden", false);
+		tooltip.div.classed("hidden", false);
 		// change line thickness and opacity
 		d3.select(this)
 			.style("stroke-width", "4px")
@@ -609,7 +615,7 @@ d3.csv("fremont.csv", function(thedata) //load data
 	function moused_out()
 	{
 		// hide tooltip
-		d3.select("#tooltip").classed("hidden", true);
+		tooltip.div.classed("hidden", true);
 		// transition line highlight back to normal
 		d3.select(this)
 			.transition().duration(250)
