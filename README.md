@@ -57,7 +57,7 @@ Details about each non-aggregate line on the graph are available through hoverin
 
 We provide the viewer with a visualization of Seattleites' cycling tendencies.
 We allow the viewer to explore how cyclist turnout varies throughout the day and how turnout is affected by environmental factors. 
-Driving the interactivity controls on our visualization is the question "how do temperature and precipitation affect the amount of cycling activity?"  
+Driving the interactivity controls on our visualization is the question "how do temperature and precipitation affect the amount of cycling activity?"
 
 <!--- Put either your storyboard content or a [link to your storyboard pdf file](storyboard.pdf?raw=true) here.
 Just like A2, you can use any software to create a *reasonable* pdf storyboard. --->
@@ -66,8 +66,10 @@ Just like A2, you can use any software to create a *reasonable* pdf storyboard. 
 
 ### Changes between Storyboard and the Final Implementation
 
-While the development process generated additional ideas which we have not pursued on account of time, 
-no functional differences exist between our storyboard and final implementation.
+Only two differences exist between our storyboard and final implementation:
+1. Our legend moved to the left of the display.
+2. In addition to the aggregate lines, we also chose to display lines for individual days
+  - This was absent from the original storyboard out of fear of a cluttered display, but we conquered the clutter through adjustment of opacity and line thickness.
 
 <!--- A paragraph explaining changes between the storyboard and the final implementation. --->
 
