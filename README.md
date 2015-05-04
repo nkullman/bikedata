@@ -24,22 +24,29 @@ a3-nkullman-gclenagh
 - Two primary data sources for this assignment:
   1. Fremont Bridge bicycle count data from the City of Seattle[(https://data.seattle.gov/)](https://data.seattle.gov/)
   2. Weather data from [WeatherUnderground](http://www.wunderground.com/)
-- Bike data consisted of hourly counts of cyclists heading NB and SB on both sides of the Fremont Bridge in Seattle, WA.
-- Weather data were daily aggregates of a number of meteorological variables
-- Datasets were merged and went through iterations of paring and formatting
-- Example of a tuple in the final dataset:
-  - *example tuple here* 
+- Bike data are hourly counts of cyclists heading NB and SB on both sides of the Fremont Bridge in Seattle, WA from October 2012 - April 2015.
+- Weather data are daily aggregates of a number of meteorological variables over the same time span.
+- Datasets were merged, pared down, and modified. Tuples in the final dataset following format:
+|""|"Date"|"Time"|"Direction"|"CyclistCount"|"IsWeekday"|"Max_TemperatureF"|"PrecipitationIn"|"daynum"|
+|----|----|----|----|----|----|----|----|----|
+|1|2012-10-02|0|"NB"|0|TRUE|63|0|275|
  
-(Put a brief description of your final interactive visualization application and your dataset here.)
+<!--- (Put a brief description of your final interactive visualization application and your dataset here.) --->
 
 
 ## Running Instructions
 
-Put your running instructions here. (Tell us how to run your visualization.) 
+<!--- Put your running instructions here. (Tell us how to run your visualization.) --->
 
-If your visualization is web-based,  it would be great if your submission can be opened online. [Github Pages](http://pages.github.com/) is a good and easy way to put your visualization online so you can put your link here.  For example:
+You can access our visualization at [http://cse512-15s.github.io/a3-nkullman-gclenagh/](http://cse512-15s.github.io/a3-nkullman-gclenagh/) or download this repository and run `python -m SimpleHTTPServer 9000` and access this from http://localhost:9000/.
 
-Access our visualization at [http://cse512-15s.github.io/a3-nkullman-gclenagh/](http://cse512-15s.github.io/a3-nkullman-gclenagh/) or download this repository and run `python -m SimpleHTTPServer 9000` and access this from http://localhost:9000/.
+Within the visualization, you have the following interactivity controls at your disposal:
+- A brush to select a range of maximum daily temperatures
+- A brush to select a range of daily precipitation amounts
+- A brush to select a range of calendar days
+- A radio button to select only weekdays or weekends
+Any time a selection is made with these controls, the visualization is updated to show only those days matching the criteria
+
 
 ## Story Board
 
