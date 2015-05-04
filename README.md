@@ -66,17 +66,12 @@ Just like A2, you can use any software to create a *reasonable* pdf storyboard. 
 
 ### Changes between Storyboard and the Final Implementation
 
-Only two differences exist between our storyboard and final implementation:
-1. Our legend moved to the left of the display.
-2. In addition to the aggregate lines, we also chose to display lines for individual days 
+While the development process generated additional ideas which we have not pursued on account of time, 
+no functional differences exist between our storyboard and final implementation.
 
 <!--- A paragraph explaining changes between the storyboard and the final implementation. --->
 
 
 ## Development Process
 
-Include:
-- Breakdown of how the work was split among the group members. 
-- A commentary on the development process, including answers to the following questions: 
-  - Roughly how much time did you spend developing your application?
-  - What aspects took the most time?
+After obtaining and processing the data as above, a mockup of the design was put together in R/Shiny, which can be seen [here](https://gclenaghan.shinyapps.io/fremont/). To implement the visualization in D3, Graham focused on the layout, selection tools, and data processing, while Nick focused on the graphic itself. We estimate it took about 15 hours/person, with a bulk of the time going to learning the basics of Javascript and D3, since neither group member had previous experience with web development.
