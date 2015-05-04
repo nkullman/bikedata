@@ -27,6 +27,7 @@ a3-nkullman-gclenagh
 - Bike data are hourly counts of cyclists crossing the east (northbound) and west (southbound) sides of the Fremont Bridge in Seattle, WA from October 2012 - April 2015.
 - Weather data are daily aggregates of a number of meteorological variables over the same time span.
 - Datasets were merged and cleaned. Tuples in the final dataset are of the following format:
+
 |Index | Date | Time | Direction | CyclistCount | IsWeekday | Max_TemperatureF | PrecipitationIn | daynum |
 | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 | 1 | 2012-10-02 | 0 | "NB" | 0 | TRUE | 63 | 0 | 275 |
