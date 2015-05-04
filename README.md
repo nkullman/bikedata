@@ -65,7 +65,10 @@ Just like A2, you can use any software to create a *reasonable* pdf storyboard. 
 
 ### Changes between Storyboard and the Final Implementation
 
-Only slight differences exist between our storyboard and final implementation. One change is purely visual, with our legend and controls moving to the left of the display. Another change
+Only two differences exist between our storyboard and final implementation:
+1. Our legend moved to the left of the display.
+2. In addition to the aggregate lines, we also chose to display lines for individual days 
+
 
 <!--- A paragraph explaining changes between the storyboard and the final implementation. --->
 
