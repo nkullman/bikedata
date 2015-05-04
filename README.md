@@ -19,8 +19,18 @@ a3-nkullman-gclenagh
 - Visualization reports number of days currently shown in gray area beneath the bank of controls.
 - Emphasized lines show hourly counts for all days in the viz aggregated by date for each direction of cyclist traffic.
 - Hovering over a non-aggregate line displays the day's date, maximum temperature, and amount of precipitation
+
+### Dataset
+- Two primary data sources for this assignment:
+  1. Fremont Bridge bicycle count data from the City of Seattle[(https://data.seattle.gov/)](https://data.seattle.gov/)
+  2. Weather data from [WeatherUnderground](http://www.wunderground.com/)
+- Bike data was hourly count of cyclists heading NB and SB on both sides of the Fremont Bridge
+- Weather data was aggregated daily and consisted of a number of meteorological variables
+- Datasets were pared down, merged, and pared down again.
+- Example of a tuple in the final dataset:
+  - *example tuple here* 
  
-(Put your a brief description of your final interactive visualization application and your dataset here.)
+(Put a brief description of your final interactive visualization application and your dataset here.)
 
 
 ## Running Instructions
