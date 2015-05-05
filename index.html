@@ -323,11 +323,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 		})
 		.entries(thedata);
 	
-	// store width of sidebar
-	var sidebarwidth = parseInt(d3.select("#sidebar").style("width"));
-	var tooltipwidth = parseInt(d3.select("#tooltip").style("width"));
-	var headerheight = parseInt(d3.select("#header").style("height"));
-	
 	// draw all NB day lines
 	var nbday = viz_alldays.selectAll(".nbday")
 		.data(dailydata[0].values)
@@ -558,7 +553,6 @@ d3.csv("fremont.csv", function(thedata) //load data
 	
 	function moused_over(d)
 	{
-		var tooltip= d3.select("#tooltip");
 		// update tooltip position
 		var mouse = d3.mouse(this);
 		tooltip.div
